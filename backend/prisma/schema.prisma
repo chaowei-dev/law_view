@@ -23,3 +23,14 @@ model Book {
   author String
   year   Int
 }
+
+model Case {
+  id     Int    @id @default(autoincrement())
+  jid    String
+  jyear  Int
+  jcase  String
+  jno    Int
+  jdate  String
+  jtitle String
+  jfull  String
+}

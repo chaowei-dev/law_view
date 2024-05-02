@@ -1,0 +1,74 @@
+<mxfile host="65bd71144e">
+    <diagram id="pKn7IcJPP9fHDGSBEH3R" name="Page-1">
+        <mxGraphModel dx="991" dy="907" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="7" value="&lt;font size=&quot;1&quot;&gt;&lt;b style=&quot;font-size: 18px&quot;&gt;@fat&lt;/b&gt;&lt;/font&gt;&lt;br style=&quot;font-size: 14px&quot;&gt;Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney's photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven't heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&lt;br&gt;&lt;br&gt;&lt;br style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 16px&quot;&gt;@mdo&lt;/font&gt;&lt;/b&gt;&lt;br style=&quot;font-size: 14px&quot;&gt;Veniam marfa mustache skateboard, adipisicing fugiat velit pitchfork beard. Freegan beard aliqua cupidatat mcsweeney's vero. Cupidatat four loko nisi, ea helvetica nulla carles. Tattooed cosby sweater food truck, mcsweeney's quis non freegan vinyl. Lo-fi wes anderson +1 sartorial. Carles non aesthetic exercitation quis gentrify. Brooklyn adipisicing craft beer vice keytar deserunt." style="perimeter=none;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingRight=25;" vertex="1" parent="1">
+                    <mxGeometry width="800" height="260" relative="1" as="geometry">
+                        <mxPoint x="10" y="400" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="8" value="" style="html=1;shadow=0;dashed=0;fillColor=#F1F1F1;strokeColor=none;" vertex="1" parent="7">
+                    <mxGeometry x="1" width="20" height="260" relative="1" as="geometry">
+                        <mxPoint x="-20" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="9" value="" style="fillColor=#C1C1C1;strokeColor=none;" vertex="1" parent="8">
+                    <mxGeometry width="16" height="45" relative="1" as="geometry">
+                        <mxPoint x="2" y="20" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="10" value="" style="shape=triangle;direction=north;fillColor=#C1C1C1;strokeColor=none;perimeter=none;" vertex="1" parent="8">
+                    <mxGeometry width="10" height="5" relative="1" as="geometry">
+                        <mxPoint x="5" y="7.5" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="11" value="" style="shape=triangle;direction=south;fillColor=#505050;strokeColor=none;perimeter=none;" vertex="1" parent="8">
+                    <mxGeometry y="1" width="10" height="5" relative="1" as="geometry">
+                        <mxPoint x="5" y="-12.5" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="14" value="99" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="280" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="JFULL:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="10" y="360" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="JYEAR:&amp;nbsp;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="280" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="ULDV,99,重訴,3,20100622,1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="280" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="JID:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="10" y="280" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="JCASE:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="10" y="320" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="重訴" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="60" y="320" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="JDATE:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="320" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="20100622" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="320" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="損害賠償" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="620" y="320" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="JTITLE:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="570" y="320" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="JNO:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="320" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="250" y="320" width="100" height="40" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

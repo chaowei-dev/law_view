@@ -5,6 +5,7 @@ import cors from "cors";
 import initializePassport from "./config/passport.js";
 import booksRouter from "./routes/books.js";
 import usersRouter from "./routes/users.js";
+import casesRouter from "./routes/cases.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(passport.session());
 // Routes
 app.use("/api/books", booksRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/cases", casesRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

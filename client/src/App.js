@@ -14,6 +14,8 @@ import PrivateRoute from "./components/permission/PrivateRoute";
 import SuperRoute from "./components/permission/SuperRoute";
 import Users from "./components/auth/Users";
 import AlertBox from "./components/box/AlertBox";
+import Cases from "./components/case/Cases";
+import CaseList from "./components/case/CaseList";
 
 function App() {
   const userRole = authService.getUserRole();
@@ -33,7 +35,7 @@ function App() {
       {/* Nav bar */}
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand as={Link} to="/books">
+          <Navbar.Brand as={Link} to="/cases/view">
             Library System
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -42,17 +44,22 @@ function App() {
               {/* Nav Link */}
               <>
                 {userRole && (
-                  <Nav.Link as={Link} to="/books">
-                    書目
-                  </Nav.Link>
+                  <>
+                    <Nav.Link as={Link} to="/cases/view">
+                      案件檢視
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/cases/list">
+                      案件列表
+                    </Nav.Link>
+                  </>
                 )}
               </>
               {/* Nav Link with super-user */}
               {userRole === "super-user" && (
                 <>
-                  <Nav.Link as={Link} to="/books/create">
+                  {/* <Nav.Link as={Link} to="/books/create">
                     新增書目
-                  </Nav.Link>
+                  </Nav.Link> */}
                   <NavDropdown title="用戶管理" id="basic-nav-dropdown">
                     <NavDropdown.Item href="/register">
                       新增用戶
@@ -115,14 +122,30 @@ function App() {
           }
         />
         <Route
-          path="/books"
+          path="/cases/view"
+          element={
+            <PrivateRoute>
+              <Cases />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cases/list"
+          element={
+            <PrivateRoute>
+              <CaseList />
+            </PrivateRoute>
+          }
+        />
+        {/* <Route
+          path="/cases"
           element={
             <PrivateRoute>
               <Books />
             </PrivateRoute>
           }
-        />
-        <Route path="/books/create" element={<CreateBook />} />
+        /> */}
+        {/* <Route path="/books/create" element={<CreateBook />} /> */}
         {/* More routes can be added here */}
       </Routes>
     </Router>
