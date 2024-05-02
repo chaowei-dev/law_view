@@ -1,0 +1,65 @@
+# CREATE A Book
+# super-user
+POST http://localhost:3001/api/books
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NjI4MzQ4LCJleHAiOjE3MTQ2MzE5NDh9.iacLuqjQLlDtWrNilags_9uaKaG5Sb4R4EFr70xvlJA
+
+{
+  "title": "New Book Title4",
+  "author": "Author Name",
+  "year": 2021
+}
+
+###
+
+# normal-user
+POST http://localhost:3001/api/books
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6Im5ld3VzZXIiLCJyb2xlIjoibm9ybWFsLXVzZXIifSwiaWF0IjoxNzE0NTg4OTgyLCJleHAiOjE3MTQ1OTI1ODJ9.rv_nNm7tC-PPddM_-WgtfdPXVFc7MHRBYIkFWyuMjH4
+
+###
+
+###
+
+# READ Get all books
+GET http://localhost:3001/api/books
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NTg4OTEyLCJleHAiOjE3MTQ1OTI1MTJ9.-XZ5Nl-QVtzE2OKoIRTw6fGaoOv7t5pnpNTwhrHvj24
+
+###
+
+# UPDATE A Book
+# super-user
+PUT http://localhost:3001/api/books/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NTg4OTEyLCJleHAiOjE3MTQ1OTI1MTJ9.-XZ5Nl-QVtzE2OKoIRTw6fGaoOv7t5pnpNTwhrHvj24
+
+{
+  "title": "Updated Book Title",
+  "author": "Updated Author Name",
+  "year": 2021
+}
+
+###
+
+# normal-user
+PUT http://localhost:3001/api/books/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6Im5ld3VzZXIiLCJyb2xlIjoibm9ybWFsLXVzZXIifSwiaWF0IjoxNzE0NTg4OTgyLCJleHAiOjE3MTQ1OTI1ODJ9.rv_nNm7tC-PPddM_-WgtfdPXVFc7MHRBYIkFWyuMjH4
+
+{
+  "title": "Updated Book Title",
+  "author": "Updated Author Name",
+  "year": 2021
+}
+
+###
+
+# DELETE A Book
+# super-user
+DELETE http://localhost:3001/api/books/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NTg4OTEyLCJleHAiOjE3MTQ1OTI1MTJ9.-XZ5Nl-QVtzE2OKoIRTw6fGaoOv7t5pnpNTwhrHvj24
+
+###
+
+# normal-user
+DELETE http://localhost:3001/api/books/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6Im5ld3VzZXIiLCJyb2xlIjoibm9ybWFsLXVzZXIifSwiaWF0IjoxNzE0NTg4OTgyLCJleHAiOjE3MTQ1OTI1ODJ9.rv_nNm7tC-PPddM_-WgtfdPXVFc7MHRBYIkFWyuMjH4

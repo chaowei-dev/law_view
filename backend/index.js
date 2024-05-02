@@ -1,0 +1,46 @@
+import express from "express";
+import session from "express-session";
+import passport from "passport";
+import cors from "cors";
+import initializePassport from "./config/passport.js";
+import booksRouter from "./routes/books.js";
+import usersRouter from "./routes/users.js";
+
+const app = express();
+
+app.use(express.json());
+app.use(
+  session({
+    secret: "secret_key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// CORS
+const allowedOrigins = ["http://localhost:3000"];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Origin not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// Initialize Passport with configured strategies
+initializePassport(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+app.use("/api/books", booksRouter);
+app.use("/api/users", usersRouter);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
