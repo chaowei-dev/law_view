@@ -1,7 +1,7 @@
-# Use the official Node.js image.
+# Use the official Node.js 20 image
 FROM node:20
 
-# Create app directory
+# Create and set the working directory
 WORKDIR /usr/src/app
 
 # Install app dependencies
@@ -11,7 +11,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-# Your app binds to port 4000, but you might want to change the comment to 3001
+# Expose port 3001
 EXPOSE 3001
 
+# Command to run the app
 CMD ["node", "index.js"]

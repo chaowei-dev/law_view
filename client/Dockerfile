@@ -1,27 +1,29 @@
-# Use a Node base image
+# Build stage
 FROM node:20 as build
 
-# Set working directory
+# Create and set the working directory
 WORKDIR /app
 
-# Add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
-
 # Install app dependencies
+ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install
-RUN npm install react-scripts@5.0.0 -g
 
-# Add app
+# Bundle app source
 COPY . .
 
 # Build the app
 RUN npm run build
 
-# Serve the app using a simple server
-# Use nginx or another web server in production
+# Serve stage
 FROM nginx:stable-alpine
+
+# Copy the build output to replace the default nginx contents
 COPY --from=build /app/build /usr/share/nginx/html
+
+# Expose port 80
 EXPOSE 80
+
+# Command to run the app
 CMD ["nginx", "-g", "daemon off;"]
