@@ -1,0 +1,13 @@
+FROM node:20
+WORKDIR /usr/src/app
+
+# Set environment to development by default, can be overridden by docker-compose
+ENV NODE_ENV development
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3001
+CMD ["node", "index.js"]
