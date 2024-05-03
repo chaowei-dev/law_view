@@ -8,6 +8,27 @@ import { authenticateToken, checkRole } from "../middleware/authMiddleware.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Check admin user
+// If not exists, create one
+const createAdminUser = async () => {
+  const user = await prisma.user.findUnique({ where: { username: "admin" } });
+  if (!user) {
+    console.log("No admin user found, creating one...");
+    const hashedPassword = await bcrypt.hash("admin", 12);
+    await prisma.user.create({
+      data: {
+        username: "admin",
+        password: hashedPassword,
+        role: "super-user",
+      },
+    });
+    console.log("Admin user created!");
+  } else {
+    console.log("Admin user already exists!");
+  }
+};
+await createAdminUser();
+
 router.post("/signup", async (req, res) => {
   const { username, password, role } = req.body;
   try {

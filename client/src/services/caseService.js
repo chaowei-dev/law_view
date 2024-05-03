@@ -1,42 +1,71 @@
 // services/caseService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api/cases/";
+// const API_URL = "http://localhost:3001/api/cases/";
+const API_URL = process.env.REACT_APP_API_URL + "/api/cases/";
 
-// http://localhost:3001/api/cases/page/{limit}/{page}
-const getAllCases = (limit, page) => {
-  return axios.get(API_URL + "page/" + limit + "/" + page, {
-    headers: {
-      Authorization: "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-    },
-  });
+const caseService = {
+  // /api/cases/page/{limit}/{page}
+  getAllCases: (limit, page) => {
+    return axios.get(API_URL + "page/" + limit + "/" + page, {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // /api/cases/count
+  getNumberOfCases: () => {
+    return axios.get(API_URL + "count", {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // /api/cases/case/{id}
+  getCaseById: (id) => {
+    return axios.get(API_URL + "case/" + id, {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // /api/cases/all-id
+  getAllCaseIDs: () => {
+    return axios.get(API_URL + "all-id", {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // Update case
+  // /api/cases/update/{id}
+  updateCase: (id, data) => {
+    return axios.put(API_URL + "update/" + id, data, {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // Delete case by id
+  // /api/cases/delete/{id}
+  deleteCase: (id) => {
+    return axios.delete(API_URL + "delete/" + id, {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
 };
 
-// http://localhost:3001/api/cases/count
-const getNumberOfCases = () => {
-  return axios.get(API_URL + "count", {
-    headers: {
-      Authorization: "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-    },
-  });
-};
-
-// http://localhost:3001/api/cases/case/{id}
-const getCaseById = (id) => {
-  return axios.get(API_URL + "case/" + id, {
-    headers: {
-      Authorization: "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-    },
-  });
-}
-
-// http://localhost:3001/api/cases/all-id
-const getAllCaseIDs = () => {
-  return axios.get(API_URL + "all-id", {
-    headers: {
-      Authorization: "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-    },
-  });
-};
-
-export default { getAllCases, getNumberOfCases, getCaseById, getAllCaseIDs };
+export default caseService;

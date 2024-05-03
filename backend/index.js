@@ -20,8 +20,8 @@ app.use(
 
 // CORS
 const corsOptions = {
-  origin: '*',  // Allow all origins
-  credentials: true  // Needed for sites hosted on a different domain to send cookies
+  origin: "*", // Allow all origins
+  credentials: true, // Needed for sites hosted on a different domain to send cookies
 };
 app.use(cors(corsOptions));
 
@@ -36,6 +36,6 @@ app.use("/api/users", usersRouter);
 app.use("/api/cases", casesRouter);
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -38,7 +38,64 @@
 - React Bootstrap Notifier
   - https://chadly.github.io/react-bs-notifier/
 
+# Linux
+
+- Node
+
+  ```
+  [Unit]
+  Description=Node.js Server
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=your_username
+  WorkingDirectory=/path/to/your/node/app
+  ExecStart=/usr/bin/node index.js
+  Restart=on-failure
+
+  [Install]
+  WantedBy=multi-user.target
+
+  ```
+
+- React
+
+  ```
+  [Unit]
+  Description=React App
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=your_username
+  WorkingDirectory=/path/to/your/react/app
+  ExecStart=/usr/bin/npm start
+  Restart=on-failure
+  Environment=PORT=3000
+
+  [Install]
+  WantedBy=multi-user.target
+
+  ```
+
+- Start
+
+  ```
+  sudo systemctl start my-node-app.service
+  sudo systemctl start my-react-app.service
+  ```
+
+- Permission
+
+  ```
+
+  ```
+
 # Note
 
 - 司法院-判決書系統
   - https://judgment.judicial.gov.tw/FJUD/Default_AD.aspx
+- Docker
+  - Remove all containers: `sudo docker rm $(sudo docker ps -a -q) -f`
+  - Remove all images: `sudo docker rmi $(sudo docker images -q) -f`

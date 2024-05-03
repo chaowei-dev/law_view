@@ -14,7 +14,7 @@ router.get("/page/:limit/:page", authenticateToken, async (req, res) => {
   const intLimit = parseInt(limit);
   const intPage = parseInt(page);
   const offset = (intPage - 1) * intLimit;
-  
+
   // Get all cases except jfull
   try {
     const cases = await prisma.case.findMany({
@@ -121,5 +121,61 @@ router.get("/all-id", authenticateToken, async (req, res) => {
   }
 });
 
+// Update case by id, only update passing fields
+router.put(
+  "/update/:id",
+  authenticateToken,
+  checkRole(["super-user"]),
+  async (req, res) => {
+    const { id } = req.params;
+    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL } = req.body;
+
+    // Replace \r\n to <br/> for line break
+    // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
+
+    const intJYEAR = parseInt(JYEAR);
+    const intJNO = parseInt(JNO);
+
+    try {
+      const updatedCase = await prisma.case.update({
+        where: { id: parseInt(id) },
+        data: {
+          jid: JID,
+          jyear: intJYEAR,
+          jcase: JCASE,
+          jno: intJNO,
+          jdate: JDATE,
+          jtitle: JTITLE,
+          jfull: JFULL,
+        },
+      });
+      res.json(updatedCase);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error updating case", error: error.message });
+    }
+  }
+);
+
+// Delete case by id
+router.delete(
+  "/delete/:id",
+  authenticateToken,
+  checkRole(["super-user"]),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const deletedCase = await prisma.case.delete({
+        where: { id: parseInt(id) },
+      });
+      res.json(deletedCase);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error deleting case", error: error.message });
+    }
+  }
+);
 
 export default router;

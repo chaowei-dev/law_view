@@ -1,24 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Table, Form } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Table,
+  Form,
+  Dropdown,
+  Modal,
+  Button,
+} from "react-bootstrap";
 import caseService from "../../services/caseService";
 import CasePagination from "./CasePagination";
+import EditCase from "./EditCase";
+import authService from "../../services/authService";
 
 const CaseList = () => {
   const [caseList, setCaseList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageLimit, setPageLimit] = useState(2); // Assuming this is fixed for now
+  const [pageLimit, setPageLimit] = useState(50); // Assuming this is fixed for now
   const [totalPages, setTotalPages] = useState(0);
+  const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
+  const [editingWindowShow, setEditingWindowShow] = useState(false);
+  const [currentCase, setCurrentCase] = useState(""); // To track which case is being edited
+
+  // Get user role
+  const userRole = authService.getUserRole();
+
+  const fetchCaseList = async () => {
+    try {
+      const response = await caseService.getAllCases(pageLimit, currentPage);
+      setCaseList(response.data);
+    } catch (error) {
+      console.error("Error fetching cases:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCaseList = async () => {
-      try {
-        const response = await caseService.getAllCases(pageLimit, currentPage);
-        setCaseList(response.data);
-      } catch (error) {
-        console.error("Error fetching cases:", error);
-      }
-    };
-
     fetchCaseList();
   }, [currentPage, pageLimit]); // Depend on currentPage
 
@@ -42,6 +59,32 @@ const CaseList = () => {
       setCurrentPage={setCurrentPage}
     />
   );
+
+  // DELETION
+  const handleDeleteClick = (c) => {
+    setCurrentCase(c);
+    setDeletingConfirmShow(true);
+  };
+  const handleCancelDelete = () => {
+    setDeletingConfirmShow(false);
+  };
+  const handleConfirmDelete = async () => {
+    caseService
+      .deleteCase(currentCase.id)
+      .then(() => {
+        setDeletingConfirmShow(false);
+        fetchCaseList();
+      })
+      .catch((error) => {
+        console.error("Error deleting case:", error);
+      });
+  };
+
+  // EDITING
+  const handleEditClick = (c) => {
+    setCurrentCase(c);
+    setEditingWindowShow(true);
+  };
 
   // Loading state
   if (caseList.length === 0) {
@@ -79,6 +122,7 @@ const CaseList = () => {
                 <th className="text-center">字號</th>
                 <th className="text-center">日期</th>
                 <th className="text-center">案由</th>
+                <th className="text-center">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -93,6 +137,29 @@ const CaseList = () => {
                   </th>
                   <th>{c.jdate}</th>
                   <th>{c.jtitle}</th>
+                  {/* Dropdown list */}
+                  <th>
+                    {userRole === "super-user" && (
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="secondary"
+                          size="sm"
+                          id="dropdown-basic"
+                        >
+                          Actions
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item onClick={() => handleEditClick(c)}>
+                            Edit
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={() => handleDeleteClick(c)}>
+                            Delete
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    )}
+                  </th>
                 </tr>
               ))}
             </tbody>
@@ -119,6 +186,32 @@ const CaseList = () => {
           </Form.Control>
         </Col>
       </Row>
+      {/* Editing modal */}
+      {editingWindowShow && currentCase && (
+        <EditCase
+          show={editingWindowShow}
+          onHide={() => setEditingWindowShow(false)}
+          lawCase={currentCase}
+          onSave={fetchCaseList} // Passing fetchCaseList as onSave to refresh the list
+        />
+      )}
+      {/* Deleting confirmation modal */}
+      {deletingConfirmShow && currentCase && (
+        <Modal show={deletingConfirmShow} onHide={handleCancelDelete} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{`Delete "${currentCase.jid}"?`}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="outline-secondary" onClick={handleCancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="outline-danger" onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </Container>
   );
 };

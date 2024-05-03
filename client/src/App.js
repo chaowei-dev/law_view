@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
@@ -7,21 +7,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-import Books from "./components/book/Books";
-import CreateBook from "./components/book/CreateBook";
 import authService from "./services/authService";
 import PrivateRoute from "./components/permission/PrivateRoute";
 import SuperRoute from "./components/permission/SuperRoute";
 import Users from "./components/auth/Users";
-import AlertBox from "./components/box/AlertBox";
+// import AlertBox from "./components/box/AlertBox";
 import Cases from "./components/case/Cases";
 import CaseList from "./components/case/CaseList";
 
 function App() {
   const userRole = authService.getUserRole();
   const userName = authService.getUserName();
-  const [messageBox, setMessageBox] = useState("");
-  const [errorBox, setErrorBox] = useState("");
+  // const [messageBox, setMessageBox] = useState("");
+  // const [errorBox, setErrorBox] = useState("");
 
   // Auto logout when token is expired
   // Check every 5 minutes
@@ -36,7 +34,7 @@ function App() {
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
           <Navbar.Brand as={Link} to="/cases/view/1">
-            Library System
+            法律慰撫金案件檢視系統
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">

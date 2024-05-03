@@ -1,7 +1,8 @@
 // services/bookService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api/books/";
+// const API_URL = "http://localhost:3001/api/books/";
+const API_URL = process.env.REACT_APP_API_URL + "/api/books/";
 
 const getAllBooks = () => {
   return axios.get(API_URL, {
