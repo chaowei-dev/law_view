@@ -8,10 +8,28 @@ const prisma = new PrismaClient();
 // Table:
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull
 
-// Get all cases
-router.get("/", authenticateToken, async (req, res) => {
+// Get all cases except jfull (every page have i items, use page to navigate)
+router.get("/:limit/:page", authenticateToken, async (req, res) => {
+  const { limit, page } = req.params;
+  const intLimit = parseInt(limit);
+  const intPage = parseInt(page);
+  const offset = (intPage - 1) * intLimit;
+  
+  // Get all cases except jfull
   try {
-    const cases = await prisma.case.findMany();
+    const cases = await prisma.case.findMany({
+      select: {
+        id: true,
+        jid: true,
+        jyear: true,
+        jcase: true,
+        jno: true,
+        jdate: true,
+        jtitle: true,
+      },
+      skip: offset,
+      take: intLimit,
+    });
     res.json(cases);
   } catch (error) {
     res
@@ -73,5 +91,21 @@ router.get("/count", authenticateToken, async (req, res) => {
       .json({ message: "Error retrieving case count", error: error.message });
   }
 });
+
+// Get case by case id
+router.get("/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const caseById = await prisma.case.findUnique({
+      where: { id: parseInt(id) },
+    });
+    res.json(caseById);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving case by id", error: error.message });
+  }
+});
+
 
 export default router;

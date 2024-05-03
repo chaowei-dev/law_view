@@ -19,16 +19,9 @@ app.use(
 );
 
 // CORS
-const allowedOrigins = ["http://localhost:3000"];
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Origin not allowed by CORS"));
-    }
-  },
-  credentials: true,
+  origin: '*',  // Allow all origins
+  credentials: true  // Needed for sites hosted on a different domain to send cookies
 };
 app.use(cors(corsOptions));
 

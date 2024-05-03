@@ -1,7 +1,7 @@
 # Create a case
 POST http://localhost:3001/api/cases
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NjgwNjM5LCJleHAiOjE3MTQ2ODQyMzl9.MYGOpjDerYuNljlnAjD9ipIuKtPPRgbKdgXfY7BibmE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NzI0MTU5LCJleHAiOjE3MTQ3Mjc3NTl9.dQnBO0RqAVkLpaUSQ73xqTGH1cirY-zfKYqnbuAdHvk
 
 {
   "JID": "ULDV,99,訴,308,20101012,1",
@@ -17,11 +17,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyL
 ###
 
 # Get the case list
-GET http://localhost:3001/api/cases
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NjcwMjc1LCJleHAiOjE3MTQ2NzM4NzV9.ofornBT1w9pXdwUMu6pLzFD50uS6eBh-EeDpp63PgBk
+GET http://localhost:3001/api/cases/3/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NzE3NTM1LCJleHAiOjE3MTQ3MjExMzV9.1A0jMvRxOpTU56S0r4K-eoZvfp5ntrx_fs3B5JA3YK0
 
 ###
 
 # Get number of cases
 GET http://localhost:3001/api/cases/count
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0Njc2NTg5LCJleHAiOjE3MTQ2ODAxODl9.6FyfMTUX-axSvE2gjZ6a-onCaCFFxHIWfneJyZEhztg
+
+### 
+
+# Get case by id
+GET http://localhost:3001/api/cases/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NzE3NTM1LCJleHAiOjE3MTQ3MjExMzV9.1A0jMvRxOpTU56S0r4K-eoZvfp5ntrx_fs3B5JA3YK0
