@@ -6,13 +6,13 @@
   - Logout
   - Edit User
 
-- **Book**
-
-  - Super User
-    - CRUD book
-    - Add normal user
-  - Normal User
-    - R book
+- **Case**
+  - List
+    - Edit
+    - Delete
+    - Pagination
+  - View
+    - Naviagte
 
 # Backend
 

@@ -131,3 +131,7 @@ dist
 
 .vscode/
 .DS_Store
+
+#　prisma
+migrations/
+*.sqlite3

@@ -22,8 +22,8 @@ const Login = () => {
     authService.login(username, password).then(
       // Success handling
       () => {
-        // Reload the page to /books
-        window.location = "/books";
+        // Reload the page to /cases/list
+        window.location = "/cases/list";
       },
       // Error handling
       (error) => {

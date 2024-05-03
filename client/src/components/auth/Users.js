@@ -6,7 +6,7 @@ import { Dropdown, Modal, Button } from "react-bootstrap";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [editingShow, setEditingShow] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null); // To track which book is being edited
+  const [currentUser, setCurrentUser] = useState(null); // To track which user is being edited
   const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
   const [changePasswordShow, setChangePasswordShow] = useState(false);
   const [newPassword, setNewPassword] = useState("");

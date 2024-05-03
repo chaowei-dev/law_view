@@ -3,7 +3,6 @@ import session from "express-session";
 import passport from "passport";
 import cors from "cors";
 import initializePassport from "./config/passport.js";
-import booksRouter from "./routes/books.js";
 import usersRouter from "./routes/users.js";
 import casesRouter from "./routes/cases.js";
 
@@ -31,7 +30,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/api/books", booksRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/cases", casesRouter);
 

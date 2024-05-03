@@ -17,20 +17,14 @@ model User {
   role     String
 }
 
-model Book {
-  id     Int    @id @default(autoincrement())
-  title  String
-  author String
-  year   Int
-}
-
 model Case {
-  id     Int    @id @default(autoincrement())
-  jid    String
-  jyear  Int
-  jcase  String
-  jno    Int
-  jdate  String
-  jtitle String
-  jfull  String
+  id      Int    @id @default(autoincrement())
+  jid     String
+  jyear   Int
+  jcase   String
+  jno     Int
+  jdate   String
+  jtitle  String
+  jfull   String
+  remarks String
 }

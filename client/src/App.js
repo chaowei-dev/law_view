@@ -55,9 +55,6 @@ function App() {
               {/* Nav Link with super-user */}
               {userRole === "super-user" && (
                 <>
-                  {/* <Nav.Link as={Link} to="/books/create">
-                    新增書目
-                  </Nav.Link> */}
                   <NavDropdown title="用戶管理" id="basic-nav-dropdown">
                     <NavDropdown.Item href="/register">
                       新增用戶
@@ -135,16 +132,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/* <Route
-          path="/cases"
-          element={
-            <PrivateRoute>
-              <Books />
-            </PrivateRoute>
-          }
-        /> */}
-        {/* <Route path="/books/create" element={<CreateBook />} /> */}
-        {/* More routes can be added here */}
       </Routes>
     </Router>
   );

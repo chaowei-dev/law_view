@@ -6,14 +6,6 @@
   - Logout
   - Edit User
 
-- **Book**
-
-  - Super User
-    - CRUD book
-    - Add normal user
-  - Normal User
-    - R book
-
 # Backend
 
 - prisma

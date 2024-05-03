@@ -8,7 +8,7 @@ const SuperRoute = ({ children }) => {
 
   if (userRole !== "super-user") {
     // Redirect them to the /login page, but save the current location they were trying to go to
-    return <Navigate to="/books" state={{ from: location }} replace />;
+    return <Navigate to="/cases/list" state={{ from: location }} replace />;
   }
 
   return children;
