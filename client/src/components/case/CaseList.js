@@ -43,6 +43,24 @@ const CaseList = () => {
     />
   );
 
+  // Loading state
+  if (caseList.length === 0) {
+    return (
+      <Container>
+        <Row>
+          <Col>
+            <h1>Case List</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <p>Loading cases...</p>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Row style={{ marginTop: "20px" }}>
@@ -67,7 +85,9 @@ const CaseList = () => {
               {caseList.map((c) => (
                 <tr key={c.id}>
                   <th className="text-center">{c.id}</th>
-                  <th>{c.jid}</th>
+                  <th>
+                    <a href={`/cases/view/${c.id}`}>{c.jid}</a>
+                  </th>
                   <th>
                     {c.jyear}年度{c.jcase}字第{c.jno}號
                   </th>

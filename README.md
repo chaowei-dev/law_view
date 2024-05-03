@@ -22,6 +22,13 @@
 - jwt
 - axios
 - express
+- route:
+  - `http://localhost:3001/cases/`
+  - GET: `/page/:limit/:page`
+  - POST: ``
+  - GET: `/count`
+  - GET: `/case/:id/`
+  - GET: `/all-id/`
 
 # Frontend
 

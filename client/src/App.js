@@ -35,7 +35,7 @@ function App() {
       {/* Nav bar */}
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand as={Link} to="/cases/view">
+          <Navbar.Brand as={Link} to="/cases/view/1">
             Library System
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -45,7 +45,7 @@ function App() {
               <>
                 {userRole && (
                   <>
-                    <Nav.Link as={Link} to="/cases/view">
+                    <Nav.Link as={Link} to="/cases/view/1">
                       案件檢視
                     </Nav.Link>
                     <Nav.Link as={Link} to="/cases/list">
@@ -122,7 +122,7 @@ function App() {
           }
         />
         <Route
-          path="/cases/view"
+          path="/cases/view/:id"
           element={
             <PrivateRoute>
               <Cases />

@@ -1,75 +1,86 @@
 import React, { useState, useEffect } from "react";
-import caseService from "../../services/caseService";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import caseService from "../../services/caseService";
 import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
 
 const Cases = () => {
-  const [caseList, setCaseList] = useState([]);
-  const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
-  const [totalCases, setTotalCases] = useState(0);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
+  const [caseIDs, setCaseIDs] = useState([]);
+  const [currentCase, setCurrentCase] = useState({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Fetch all case IDs on component mount
   useEffect(() => {
-    fetchCaseList();
-  }, []);
-
-  useEffect(() => {
-    fetchNumberOfPages();
-  }, [caseList]);
-
-  const fetchCaseList = () => {
     caseService
-      .getAllCases()
+      .getAllCaseIDs()
       .then((response) => {
-        setCaseList(response.data);
-        setCurrentCaseIndex(0);
-        console.log("Fetched cases:", response.data);
+        // Store case IDs and set current index
+        setCaseIDs(response.data);
+
+        // Find index of current case ID
+        const index = response.data.findIndex(
+          (caseItem) => caseItem.id.toString() === id
+        );
+
+        // Set current index if found
+        if (index !== -1) setCurrentIndex(index);
       })
       .catch((error) => {
-        console.error("Error fetching cases:", error);
+        console.error("Error fetching case IDs:", error);
       });
-  };
+  }, [id]);
 
-  const fetchNumberOfPages = () => {
-    caseService
-      .getNumberOfCases()
-      .then((response) => {
-        setTotalCases(response.data.count);
-      })
-      .catch((error) => {
-        console.error("Error fetching number of cases:", error);
-      });
-  };
+  // Fetch individual CASE data when ID changes
+  useEffect(() => {
+    if (caseIDs.length > 0 && caseIDs[currentIndex]) {
+      caseService
+        .getCaseById(caseIDs[currentIndex].id)
+        .then((response) => {
+          setCurrentCase(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching case:", error);
+        });
+    }
+  }, [currentIndex, caseIDs]);
 
+  // Navigation handlers
   const handlePrevCase = () => {
-    const newIndex = currentCaseIndex - 1;
-    if (newIndex >= 0) {
-      setCurrentCaseIndex(newIndex);
+    if (currentIndex > 0) {
+      navigate(`/cases/view/${caseIDs[currentIndex - 1].id}`);
     }
   };
-
   const handleNextCase = () => {
-    const newIndex = currentCaseIndex + 1;
-    if (newIndex < caseList.length) {
-      setCurrentCaseIndex(newIndex);
+    if (currentIndex < caseIDs.length - 1) {
+      navigate(`/cases/view/${caseIDs[currentIndex + 1].id}`);
     }
   };
-
   const handleInput = (e) => {
-    const index = parseInt(e.target.value, 10) - 1; // Convert input to zero-based index
-    if (index >= 0 && index < caseList.length) {
-      setCurrentCaseIndex(index);
+    const newIndex = parseInt(e.target.value, 10) - 1; // Convert to zero-based index
+    if (!isNaN(newIndex) && newIndex >= 0 && newIndex < caseIDs.length) {
+      navigate(`/cases/view/${caseIDs[newIndex].id}`);
     }
   };
 
-  if (caseList.length === 0) {
-    return <div>Loading...</div>;
+  // Loading state
+  if (!currentCase.jid) {
+    return (
+      <Container>
+        <Row>
+          <Col>
+            <p>Loading...</p>
+          </Col>
+        </Row>
+      </Container>
+    );
   }
-
-  const currentCase = caseList[currentCaseIndex];
 
   return (
     <Container>
-      {/* Title */}
+      {/* Basic information */}
       <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
         <Col>
           <Card>
@@ -79,38 +90,36 @@ const Cases = () => {
               </Card.Title>
               <Card.Text>
                 {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
-                號 ({currentCase.jdate})， {currentCase.jtitle}
+                号 ({currentCase.jdate}), {currentCase.jtitle}
               </Card.Text>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      {/* Pagination */}
+      {/* Navigation */}
       <Row>
         <Col className="d-flex align-items-center">
           <Button
             variant="link"
             onClick={handlePrevCase}
-            disabled={currentCaseIndex === 0}
-            className="me-2"
+            disabled={currentIndex === 0}
           >
             <ArrowLeftCircle size={24} />
           </Button>
           <Form.Control
             type="number"
-            value={currentCaseIndex + 1}
+            value={currentIndex + 1}
             onChange={handleInput}
             style={{ width: "50px" }}
-            className=" me-2"
             min="1"
-            max={caseList.length}
+            max={caseIDs.length}
+            className="me-2 ms-2"
           />
-          <span>/ {totalCases}</span>
+          <span>/ {caseIDs.length}</span>
           <Button
             variant="link"
             onClick={handleNextCase}
-            disabled={currentCaseIndex === caseList.length - 1}
-            className="ms-2"
+            disabled={currentIndex === caseIDs.length - 1}
           >
             <ArrowRightCircle size={24} />
           </Button>
@@ -130,12 +139,12 @@ const Cases = () => {
               border: "1px solid #dee2e6",
               maxHeight: "600px",
               overflowY: "auto",
-              whiteSpace: "pre-wrap", // Preserves whitespace
+              whiteSpace: "pre-wrap",
             }}
             dangerouslySetInnerHTML={{
-              __html: currentCase.jfull || "No Content Available", // Allows HTML content to be rendered (<br>)
+              __html: currentCase.jfull || "No Content Available",
             }}
-          />
+          ></div>
         </Col>
       </Row>
     </Container>
