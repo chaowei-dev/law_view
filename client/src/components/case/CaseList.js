@@ -9,15 +9,22 @@ import {
   Modal,
   Button,
 } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+
 import caseService from "../../services/caseService";
-import CasePagination from "./CasePagination";
-import EditCase from "./EditCase";
 import authService from "../../services/authService";
 
+import EditCase from "./EditCase";
+import CasePagination from "./CasePagination";
+import CaseSearch from "./CaseSearch";
+
 const CaseList = () => {
+  // use params and navigate
+  const { pageNum, pageSize, caseKeyword } = useParams();
+  const navigate = useNavigate();
+
+  // Use state
   const [caseList, setCaseList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageLimit, setPageLimit] = useState(50); // Assuming this is fixed for now
   const [totalPages, setTotalPages] = useState(0);
   const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
   const [editingWindowShow, setEditingWindowShow] = useState(false);
@@ -26,37 +33,42 @@ const CaseList = () => {
   // Get user role
   const userRole = authService.getUserRole();
 
+  // Fetch case list
   const fetchCaseList = async () => {
     try {
-      const response = await caseService.getAllCases(pageLimit, currentPage);
+      const response = await caseService.getAllCases(pageSize, pageNum);
       setCaseList(response.data);
     } catch (error) {
       console.error("Error fetching cases:", error);
     }
   };
 
+  // Fetch case list on initial load
   useEffect(() => {
     fetchCaseList();
-  }, [currentPage, pageLimit]); // Depend on currentPage
+  }, [pageNum, pageSize]); // Depend on currentPage and pageLimit
 
+  // Fetch number of pages for pagination on initial load
   useEffect(() => {
     const fetchNumberOfPages = async () => {
       try {
         const response = await caseService.getNumberOfCases();
-        setTotalPages(Math.ceil(response.data.count / pageLimit)); // Correct calculation for totalPages
+        setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
         console.error("Error fetching number of cases:", error);
       }
     };
 
     fetchNumberOfPages();
-  }, [pageLimit]);
+  }, [pageSize]);
 
   const paginationHtml = (
     <CasePagination
       totalPages={totalPages}
-      currentPage={currentPage}
-      setCurrentPage={setCurrentPage}
+      navigate={navigate}
+      pageNum={pageNum}
+      pageSize={pageSize}
+      caseKeyword={caseKeyword}
     />
   );
 
@@ -86,6 +98,11 @@ const CaseList = () => {
     setEditingWindowShow(true);
   };
 
+  // CHANGE page limit
+  const handlePageLimitChange = (e) => {
+    navigate(`/cases/list/${e}/1/${caseKeyword}`);
+  };
+
   // Loading state
   if (caseList.length === 0) {
     return (
@@ -108,7 +125,7 @@ const CaseList = () => {
     <Container>
       <Row style={{ marginTop: "20px" }}>
         <Col>
-          <h1>Case List</h1>
+          <CaseSearch />
         </Col>
         <Col className="d-flex justify-content-end">{paginationHtml}</Col>
       </Row>
@@ -137,7 +154,6 @@ const CaseList = () => {
                   </th>
                   <th>{c.jdate}</th>
                   <th>{c.jtitle}</th>
-                  {/* Dropdown list */}
                   <th>
                     {userRole === "super-user" && (
                       <Dropdown>
@@ -173,8 +189,8 @@ const CaseList = () => {
           {/* Dropdown for page limit */}
           <Form.Control
             as="select"
-            value={pageLimit}
-            onChange={(e) => setPageLimit(e.target.value)}
+            value={pageSize}
+            onChange={(e) => handlePageLimitChange(e.target.value)}
             style={{ width: "100px" }}
           >
             <option value="2">2</option>

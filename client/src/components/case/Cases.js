@@ -5,7 +5,7 @@ import caseService from "../../services/caseService";
 import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
 
 const Cases = () => {
-  const { id } = useParams();
+  const { id: caseId } = useParams();
   const navigate = useNavigate();
 
   const [caseIDs, setCaseIDs] = useState([]);
@@ -22,7 +22,7 @@ const Cases = () => {
 
         // Find index of current case ID
         const index = response.data.findIndex(
-          (caseItem) => caseItem.id.toString() === id
+          (caseItem) => caseItem.id.toString() === caseId
         );
 
         // Set current index if found
@@ -31,7 +31,7 @@ const Cases = () => {
       .catch((error) => {
         console.error("Error fetching case IDs:", error);
       });
-  }, [id]);
+  }, [caseId]);
 
   // Fetch individual CASE data when ID changes
   useEffect(() => {

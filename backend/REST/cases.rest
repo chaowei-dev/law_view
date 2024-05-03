@@ -1,7 +1,7 @@
 # Create a case
 POST http://localhost:3001/api/cases
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NzI0MTU5LCJleHAiOjE3MTQ3Mjc3NTl9.dQnBO0RqAVkLpaUSQ73xqTGH1cirY-zfKYqnbuAdHvk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0NzY1NDg3LCJleHAiOjE3MTQ3NjkwODd9.hAHAllOQg1BGA6OolWXRJ5iGaKTD-OwtZUJHTNFNyzY
 
 {
   "JID": "ULDV,99,訴,308,20101012,1",

@@ -3,34 +3,39 @@ import { Pagination } from "react-bootstrap";
 
 const CasePagination = ({
   totalPages,
-  currentPage,
-  setCurrentPage,
+  pageNum,
+  pageSize,
+  caseKeyword,
+  navigate,
 }) => {
+  // Convert pageNum and pageSize from string to number for proper comparisons
+  const currentPage = Number(pageNum);
+  const itemsPerPage = Number(pageSize);
+
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+    // Navigate using React Router with correct types and values
+    navigate(`/cases/list/${itemsPerPage}/${newPage}/${caseKeyword}`);
   };
 
-  // Function to generate pagination items
-  // Case 1: 1 2 3 4 5 ... 20
-  // Case 2: 1 ... 10 11 12 13 14 ... 20
-  // Case 3: 1 ... 16 17 18 19 20
   const renderPaginationItems = () => {
     const items = [];
+    // Calculate pages for display
     const startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(totalPages, currentPage + 2);
 
+    // Case 1: If there are less than 5 pages
     if (startPage > 1) {
       items.push(
         <Pagination.Item key={1} onClick={() => handlePageChange(1)}>
-          {1}
+          1
         </Pagination.Item>
       );
-
       if (startPage > 2) {
         items.push(<Pagination.Ellipsis key="ellipsis-start" />);
       }
     }
 
+    // Generate pagination buttons for the current range
     for (let i = startPage; i <= endPage; i++) {
       items.push(
         <Pagination.Item
@@ -43,11 +48,11 @@ const CasePagination = ({
       );
     }
 
+    // Case 2: If there are more than 5 pages
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
         items.push(<Pagination.Ellipsis key="ellipsis-end" />);
       }
-
       items.push(
         <Pagination.Item
           key={totalPages}
@@ -62,21 +67,19 @@ const CasePagination = ({
   };
 
   return (
-    <>
-      <Pagination>
-        {/* <Pagination.First disabled={currentPage === 1} onClick={() => handlePageChange(1)} /> */}
-        <Pagination.Prev
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        />
-        {renderPaginationItems()}
-        <Pagination.Next
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        />
-        {/* <Pagination.Last disabled={currentPage === totalPages} onClick={() => handlePageChange(totalPages)} /> */}
-      </Pagination>
-    </>
+    <Pagination>
+      <Pagination.Prev
+        disabled={currentPage === 1}
+        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+      />
+      {renderPaginationItems()}
+      <Pagination.Next
+        disabled={currentPage === totalPages}
+        onClick={() =>
+          currentPage < totalPages && handlePageChange(currentPage + 1)
+        }
+      />
+    </Pagination>
   );
 };
 
