@@ -34,6 +34,17 @@ Content-Type: application/json
 ###
 
 # Test login (admin)
+POST http://163.13.172.18:3001/api/users/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+# Test login (admin)
 POST http://localhost:3001/api/users/login
 Content-Type: application/json
 
@@ -41,6 +52,7 @@ Content-Type: application/json
   "username": "admin",
   "password": "admin"
 }
+
 
 ###
 

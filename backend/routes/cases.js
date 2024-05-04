@@ -44,7 +44,7 @@ router.post(
   authenticateToken,
   checkRole(["super-user"]),
   async (req, res) => {
-    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL } = req.body;
+    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
 
     // Check if jid and jfull are provided
     if (!JID || !JFULL) {
@@ -69,6 +69,7 @@ router.post(
           jdate: JDATE,
           jtitle: JTITLE,
           jfull: JFULL,
+          remarks: REMARKS,
         },
       });
       res.status(201).json(newCase);
