@@ -17,9 +17,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxL
 ###
 
 # Create a case on wan
-POST http://163.13.172.18:3001/api/cases
+POST http://163.13.172.18:3000/api/cases
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0ODIyNTMyLCJleHAiOjE3MTQ4MjYxMzJ9.2qx63bDl7XZMjiFj0c08omRLu_aX8fKfijvOhlSr6J0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0ODI1MDgzLCJleHAiOjE3MTQ4Mjg2ODN9.SdCrDQRIRapGovFW_DNuKvoempDLYJZ4obprxHlBKt8
 
 {
   "JID": "ULDV,99,訴,308,20101012,1",
@@ -38,6 +38,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxL
 # Get the case list except jfull
 GET http://localhost:3001/api/cases/list/3/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0ODIyMzEyLCJleHAiOjE3MTQ4MjU5MTJ9.e_T_HliVSU3GF5JT543QEH-OikLMR80rNsj_GfG_8e4
+
+
+###
+
+# Get the case list except jfull on wan
+GET http://163.13.172.18:3000/api/cases/list/3/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE0ODI1MDgzLCJleHAiOjE3MTQ4Mjg2ODN9.SdCrDQRIRapGovFW_DNuKvoempDLYJZ4obprxHlBKt8
 
 
 ###

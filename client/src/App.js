@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { VscLaw } from "react-icons/vsc";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Login from "./components/auth/Login";
@@ -14,6 +15,7 @@ import Users from "./components/auth/Users";
 // import AlertBox from "./components/box/AlertBox";
 import Cases from "./components/case/Cases";
 import CaseList from "./components/case/CaseList";
+import AddCase from "./components/case/AddCase";
 
 function App() {
   const userRole = authService.getUserRole();
@@ -34,7 +36,7 @@ function App() {
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
           <Navbar.Brand as={Link} to="/cases/view/1">
-            法律慰撫金案件檢視系統
+            <VscLaw />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
@@ -48,6 +50,9 @@ function App() {
                     </Nav.Link>
                     <Nav.Link as={Link} to={"/cases/list/10/1"}>
                       案件列表
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/cases/add">
+                      新增案件
                     </Nav.Link>
                   </>
                 )}
@@ -129,6 +134,14 @@ function App() {
           element={
             <PrivateRoute>
               <CaseList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cases/add"
+          element={
+            <PrivateRoute>
+              <AddCase />
             </PrivateRoute>
           }
         />

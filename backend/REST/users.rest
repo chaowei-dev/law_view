@@ -34,7 +34,7 @@ Content-Type: application/json
 ###
 
 # Test login (admin)
-POST http://163.13.172.18:3001/api/users/login
+POST http://163.13.172.18:3000/api/users/login
 Content-Type: application/json
 
 {

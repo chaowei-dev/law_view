@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // const API_URL = "http://localhost:3001/api/cases/";
-const API_URL = process.env.REACT_APP_API_URL + "/api/cases/";
+const API_URL = process.env.REACT_APP_API_URL + "/cases/";
 
 const caseService = {
   // /api/cases/page/{limit}/{page}
