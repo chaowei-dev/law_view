@@ -1,13 +1,19 @@
 FROM node:20
+
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Set environment to development by default, can be overridden by docker-compose
-ENV NODE_ENV development
+# Copy package.json and package-lock.json (or just package.json if no lock file)
+COPY package.json ./
 
-COPY package*.json ./
+# Install dependencies
 RUN npm install
 
+# Copy the rest of the backend code
 COPY . .
 
+# Expose the port the app runs on
 EXPOSE 3001
+
+# Serve the app
 CMD ["node", "index.js"]
