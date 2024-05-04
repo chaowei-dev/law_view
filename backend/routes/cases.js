@@ -9,11 +9,12 @@ const prisma = new PrismaClient();
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull
 
 // Get all cases except jfull (every page have i items, use page to navigate)
-router.get("/page/:limit/:page", authenticateToken, async (req, res) => {
-  const { limit, page } = req.params;
-  const intLimit = parseInt(limit);
+router.get("/list/:size/:page", authenticateToken, async (req, res) => {
+  const { size, page } = req.params;
+  console.log(size, page);
+  const intSize = parseInt(size);
   const intPage = parseInt(page);
-  const offset = (intPage - 1) * intLimit;
+  const offset = (intPage - 1) * intSize;
 
   // Get all cases except jfull
   try {
@@ -26,9 +27,10 @@ router.get("/page/:limit/:page", authenticateToken, async (req, res) => {
         jno: true,
         jdate: true,
         jtitle: true,
+        remarks: true,
       },
       skip: offset,
-      take: intLimit,
+      take: intSize,
     });
     res.json(cases);
   } catch (error) {
@@ -129,7 +131,7 @@ router.put(
   checkRole(["super-user"]),
   async (req, res) => {
     const { id } = req.params;
-    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL } = req.body;
+    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
 
     // Replace \r\n to <br/> for line break
     // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
@@ -148,6 +150,7 @@ router.put(
           jdate: JDATE,
           jtitle: JTITLE,
           jfull: JFULL,
+          remarks: REMARKS,
         },
       });
       res.json(updatedCase);

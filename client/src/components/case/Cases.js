@@ -80,24 +80,8 @@ const Cases = () => {
 
   return (
     <Container>
-      {/* Basic information */}
       <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <Col>
-          <Card>
-            <Card.Body>
-              <Card.Title>
-                <b>{currentCase.jid}</b>
-              </Card.Title>
-              <Card.Text>
-                {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
-                号 ({currentCase.jdate}), {currentCase.jtitle}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      {/* Navigation */}
-      <Row>
+        {/* Navigation */}
         <Col className="d-flex align-items-center">
           <Button
             variant="link"
@@ -123,6 +107,20 @@ const Cases = () => {
           >
             <ArrowRightCircle size={24} />
           </Button>
+        </Col>
+        {/* Basic information */}
+        <Col className="align-items-center">
+          <Card>
+            <Card.Body>
+              <Card.Title>
+                <b>{currentCase.jid}</b>
+              </Card.Title>
+              <Card.Text>
+                {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
+                号 ({currentCase.jdate}), {currentCase.jtitle}
+              </Card.Text>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
       {/* Content */}

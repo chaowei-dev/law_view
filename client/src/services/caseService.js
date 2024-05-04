@@ -6,8 +6,8 @@ const API_URL = process.env.REACT_APP_API_URL + "/api/cases/";
 
 const caseService = {
   // /api/cases/page/{limit}/{page}
-  getAllCases: (limit, page) => {
-    return axios.get(API_URL + "page/" + limit + "/" + page, {
+  getAllCases: (size, page) => {
+    return axios.get(API_URL + "list/" + size + "/" + page, {
       headers: {
         Authorization:
           "Bearer " + JSON.parse(localStorage.getItem("user")).token,

@@ -11,6 +11,7 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
     JNO: "",
     JDATE: "",
     JTITLE: "",
+    REMARKS: "",
   });
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
         JNO: lawCase.jno,
         JDATE: lawCase.jdate,
         JTITLE: lawCase.jtitle,
+        REMARKS: lawCase.remarks,
       });
     }
   }, [lawCase]);
@@ -143,6 +145,19 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
               setFormCase((prev) => ({ ...prev, JTITLE: e.target.value }))
             }
             placeholder="Enter Title"
+          />
+        </InputGroup>
+        <InputGroup className="mb-3">
+          <InputGroup.Text id="inputGroup-sizing-sm">Remarks:</InputGroup.Text>
+          <Form.Control
+            aria-label="Remarks"
+            aria-describedby="inputGroup-sizing-sm"
+            type="text"
+            value={formCase.REMARKS}
+            onChange={(e) =>
+              setFormCase((prev) => ({ ...prev, REMARKS: e.target.value }))
+            }
+            placeholder="Enter Remarks"
           />
         </InputGroup>
       </Modal.Body>
