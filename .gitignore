@@ -134,4 +134,4 @@ dist
 
 #　prisma
 migrations/
-*.sqlite3
+# *.sqlite3
