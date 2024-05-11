@@ -11,20 +11,29 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
-  role     String
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cases     Case[] // A user can have many cases
 }
 
+// One user can have many cases
 model Case {
-  id      Int     @id @default(autoincrement())
-  jid     String
-  jyear   Int
-  jcase   String
-  jno     Int
-  jdate   String
-  jtitle  String
-  jfull   String
-  remarks String?
+  id        Int      @id @default(autoincrement())
+  jid       String
+  jyear     Int
+  jcase     String
+  jno       Int
+  jdate     String
+  jtitle    String
+  jfull     String
+  remarks   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // Foreign key to associate each case with a user
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id]) // Relates each case to a user
 }

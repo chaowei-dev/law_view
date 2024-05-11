@@ -22,13 +22,37 @@
 - jwt
 - axios
 - express
-- route:
-  - `http://localhost:3001/cases/`
-  - GET: `/page/:limit/:page`
-  - POST: ``
-  - GET: `/count`
-  - GET: `/case/:id/`
-  - GET: `/all-id/`
+
+## route
+
+- `http://localhost:3001/users`
+
+  - GET
+  - POST
+  - PUT
+  - DEL
+
+- `http://localhost:3001/cases/`
+  - POST: `/` (create a new case)
+    ```
+    {
+      'jid':'',
+      'jyear':,
+      'jcase':'',
+      'jno':,
+      'jdate':'',
+      'jtitle':'',
+      'jfull':'',
+      'remarks':'',
+      'userId':''
+    }
+    ```
+  - GET: `/list/:size/:page` (get all case)
+  - GET: `/count` (get nubmer of cases)
+  - GET: `/case/:id` (get case by id)
+  - GET: `/all-id` (get id list)
+  - PUT: `/update/:id` (update case by id)
+  - DEL: `/delete/:id` (delete case by id)
 
 # Frontend
 

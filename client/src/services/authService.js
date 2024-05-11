@@ -92,6 +92,17 @@ const getUserName = () => {
   return userName;
 };
 
+const getUserId = () => {
+  // Get token from local storage
+  const token = getToken();
+  if (!token) return null;
+
+  // Get user ID from token
+  const userId = token.user.id;
+
+  return userId;
+};
+
 const checkTokenExpiration = () => {
   const token = getToken();
 
@@ -115,4 +126,5 @@ export default {
   getUserList,
   getUserRole,
   getUserName,
+  getUserId,
 };

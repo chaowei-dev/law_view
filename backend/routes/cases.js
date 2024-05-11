@@ -6,7 +6,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Table:
-// id | jid | jyear | jcase | jno | jdate | jtitle | jfull
+// id | jid | jyear | jcase | jno | jdate | jtitle | jfull \ remarks \ createdAt | updatedAt \ userId(FK to user table)
 
 // Get all cases except jfull (every page have i items, use page to navigate)
 router.get("/list/:size/:page", authenticateToken, async (req, res) => {
@@ -46,32 +46,33 @@ router.post(
   authenticateToken,
   checkRole(["super-user"]),
   async (req, res) => {
-    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
+    const { jid, jyear, jcase, jno, jdate, jtitle, jfull, remarks, userId } =
+      req.body;
 
     // Check if jid and jfull are provided
-    if (!JID || !JFULL) {
+    if (!jid || !jfull) {
       return res.status(400).json({
         message: "Missing required fields: jid and jfull must be provided.",
       });
     }
 
-    // Replace \r\n to <br/> for line break
-    // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
+    // Parse jyear and jno to integer
+    const intJYEAR = parseInt(jyear);
+    const intJNO = parseInt(jno);
 
-    const intJYEAR = parseInt(JYEAR);
-    const intJNO = parseInt(JNO);
-
+    // Create to database
     try {
       const newCase = await prisma.case.create({
         data: {
-          jid: JID,
+          jid,
           jyear: intJYEAR,
-          jcase: JCASE,
+          jcase,
           jno: intJNO,
-          jdate: JDATE,
-          jtitle: JTITLE,
-          jfull: JFULL,
-          remarks: REMARKS,
+          jdate,
+          jtitle,
+          jfull,
+          remarks,
+          userId,
         },
       });
       res.status(201).json(newCase);
@@ -82,6 +83,48 @@ router.post(
     }
   }
 );
+
+// router.post(
+//   "/",
+//   authenticateToken,
+//   checkRole(["super-user"]),
+//   async (req, res) => {
+//     const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
+
+//     // Check if jid and jfull are provided
+//     if (!JID || !JFULL) {
+//       return res.status(400).json({
+//         message: "Missing required fields: jid and jfull must be provided.",
+//       });
+//     }
+
+//     // Replace \r\n to <br/> for line break
+//     // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
+
+//     const intJYEAR = parseInt(JYEAR);
+//     const intJNO = parseInt(JNO);
+
+//     try {
+//       const newCase = await prisma.case.create({
+//         data: {
+//           jid: JID,
+//           jyear: intJYEAR,
+//           jcase: JCASE,
+//           jno: intJNO,
+//           jdate: JDATE,
+//           jtitle: JTITLE,
+//           jfull: JFULL,
+//           remarks: REMARKS,
+//         },
+//       });
+//       res.status(201).json(newCase);
+//     } catch (error) {
+//       res
+//         .status(500)
+//         .json({ message: "Error creating case", error: error.message });
+//     }
+//   }
+// );
 
 // Get number of cases
 router.get("/count", authenticateToken, async (req, res) => {

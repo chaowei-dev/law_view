@@ -5,6 +5,17 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL + "/cases/";
 
 const caseService = {
+  // Create new case
+  // POST: /api/cases
+  createCase: (data) => {
+    return axios.post(API_URL, data, {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
   // /api/cases/page/{limit}/{page}
   getAllCases: (size, page) => {
     return axios.get(API_URL + "list/" + size + "/" + page, {

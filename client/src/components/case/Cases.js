@@ -117,7 +117,7 @@ const Cases = () => {
               </Card.Title>
               <Card.Text>
                 {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
-                号 ({currentCase.jdate}), {currentCase.jtitle}
+                號 ({currentCase.jdate}), {currentCase.jtitle}
               </Card.Text>
             </Card.Body>
           </Card>
