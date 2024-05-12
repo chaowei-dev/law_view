@@ -3,16 +3,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import caseService from "../../services/caseService";
 import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
+// import CaseKeywordView from "./caseView/CaseKeywordView";
 
 const Cases = () => {
   const { id: caseId } = useParams();
   const navigate = useNavigate();
-
   const [caseIDs, setCaseIDs] = useState([]);
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [keywordContent, setKeywordContent] = useState("");
+  const [keyword, setKeyword] = useState("事實及理由");
 
-  // Fetch all case IDs on component mount
+  const basicKeywordList = ["事實及理由, 事實, 理由", "得心證", "慰撫金"];
+
+  // Fetch all case IDs
   useEffect(() => {
     caseService
       .getAllCaseIDs()
@@ -33,12 +37,13 @@ const Cases = () => {
       });
   }, [caseId]);
 
-  // Fetch individual CASE data when ID changes
+  // Set jfull content
   useEffect(() => {
     if (caseIDs.length > 0 && caseIDs[currentIndex]) {
       caseService
         .getCaseById(caseIDs[currentIndex].id)
         .then((response) => {
+          // Store current case data
           setCurrentCase(response.data);
         })
         .catch((error) => {
@@ -46,6 +51,55 @@ const Cases = () => {
         });
     }
   }, [currentIndex, caseIDs]);
+
+  // Set keyword jfull content
+  // Set keyword full content
+  useEffect(() => {
+    if (currentCase && currentCase.jfull) {
+      let regexPattern;
+
+      // Determine the regex pattern based on the selected keyword
+      if (keyword === "事實及理由, 事實, 理由") {
+        regexPattern = /事\s*實|理\s*由/gi; // Regex pattern to find "事實及理由"
+      } else {
+        regexPattern = new RegExp(keyword, "gi"); // Regex pattern for a specific keyword
+      }
+
+      // Find the keyword in the content and get the text after it
+      const match = regexPattern.exec(currentCase.jfull);
+
+      if (match) {
+        const startIndex = match.index;
+        const textAfterKeyword = currentCase.jfull.substring(startIndex);
+
+        // Replace the first occurrence of the keyword with a highlighted version
+        const highlightedContent = textAfterKeyword.replace(
+          regexPattern,
+          (match) => `<mark><b>${match}</b></mark>`
+        );
+
+        // Set the keyword content with highlighted keyword and text after it
+        setKeywordContent(highlightedContent.trim());
+      } else {
+        // Provide a message if the section is not found
+        setKeywordContent(
+          `Section '${keyword}' not found in the provided text.`
+        );
+      }
+    }
+  }, [currentCase, keyword]);
+
+  // Handle keyword selection change
+  const handleKeywordChange = (e) => {
+    const options = e.target.options;
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selectedValues.push(options[i].value);
+      }
+    }
+    setKeyword(selectedValues[0]); // Assuming single selection for now
+  };
 
   // Navigation handlers
   const handlePrevCase = () => {
@@ -80,7 +134,7 @@ const Cases = () => {
 
   return (
     <Container>
-      <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Row className="mb-4 mt-4">
         {/* Navigation */}
         <Col className="d-flex align-items-center">
           <Button
@@ -94,7 +148,7 @@ const Cases = () => {
             type="number"
             value={currentIndex + 1}
             onChange={handleInput}
-            style={{ width: "50px" }}
+            style={{ width: "100px" }}
             min="1"
             max={caseIDs.length}
             className="me-2 ms-2"
@@ -123,19 +177,22 @@ const Cases = () => {
           </Card>
         </Col>
       </Row>
-      {/* Content */}
-      <Row style={{ marginTop: "20px" }}>
+      <Row className="mb-2">
         <Col>
-          <h4>內文:</h4>
+          <h4>原文:</h4>
+        </Col>
+        <Col>
+          <h4>關鍵字:</h4>
         </Col>
       </Row>
-      <Row style={{ maxHeight: "600px", overflowY: "auto" }}>
+      {/* Content */}
+      <Row>
         <Col>
           <div
             style={{
               padding: "10px",
               border: "1px solid #dee2e6",
-              maxHeight: "600px",
+              maxHeight: "815px",
               overflowY: "auto",
               whiteSpace: "pre-wrap",
             }}
@@ -143,6 +200,39 @@ const Cases = () => {
               __html: currentCase.jfull || "No Content Available",
             }}
           ></div>
+        </Col>
+        <Col>
+          {/* Select keyword */}
+          <select
+            style={{ height: "100px" }}
+            className="form-select mb-3"
+            aria-label="Select a section"
+            value={keyword} // This controls which option is selected
+            onChange={handleKeywordChange} // This updates the state on change
+            multiple
+          >
+            {basicKeywordList.map((k, index) => (
+              <option key={index} value={k} selected={k === keyword}>
+                {k}
+              </option>
+            ))}
+          </select>
+
+          {/* Keyword Content */}
+          <div>
+            <div
+              style={{
+                padding: "10px",
+                border: "1px solid #dee2e6",
+                maxHeight: "700px",
+                overflowY: "auto",
+                whiteSpace: "pre-wrap",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: keywordContent || "No Content Available",
+              }}
+            ></div>
+          </div>
         </Col>
       </Row>
     </Container>
