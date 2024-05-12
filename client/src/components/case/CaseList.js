@@ -121,6 +121,8 @@ const CaseList = () => {
     );
   }
 
+  let serialNum = (pageNum - 1) * pageSize + 1;
+
   return (
     <Container>
       <Row style={{ marginTop: "20px" }}>
@@ -145,7 +147,7 @@ const CaseList = () => {
             <tbody>
               {caseList.map((c) => (
                 <tr key={c.id}>
-                  <th className="text-center">{c.id}</th>
+                  <th className="text-center">{serialNum++}</th>
                   <th>
                     <a href={`/cases/view/${c.id}`}>{c.jid}</a>
                   </th>
