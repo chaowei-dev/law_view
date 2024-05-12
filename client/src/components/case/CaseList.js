@@ -26,6 +26,7 @@ const CaseList = () => {
   // Use state
   const [caseList, setCaseList] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalCases, setTotalCases] = useState(0);
   const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
   const [editingWindowShow, setEditingWindowShow] = useState(false);
   const [currentCase, setCurrentCase] = useState(""); // To track which case is being edited
@@ -53,6 +54,7 @@ const CaseList = () => {
     const fetchNumberOfPages = async () => {
       try {
         const response = await caseService.getNumberOfCases();
+        setTotalCases(response.data.count);
         setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
         console.error("Error fetching number of cases:", error);
@@ -64,6 +66,7 @@ const CaseList = () => {
 
   const paginationHtml = (
     <CasePagination
+      totalCases={totalCases}
       totalPages={totalPages}
       navigate={navigate}
       pageNum={pageNum}
@@ -188,6 +191,7 @@ const CaseList = () => {
         <Col></Col>
         <Col className="d-flex justify-content-center">{paginationHtml}</Col>
         <Col className="d-flex justify-content-end">
+          <p className="mr-3 mt-2">共:{totalCases}筆</p>
           {/* Dropdown for page limit */}
           <Form.Control
             as="select"

@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
-import caseService from "../../services/caseService";
 import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
-// import CaseKeywordView from "./caseView/CaseKeywordView";
+import caseService from "../../services/caseService";
+import keywordService from "../../services/keywordService";
 
 const Cases = () => {
+  const basicKeywordList = ["事實及理由, 事實, 理由", "得心證", "慰撫金"];
+
   const { id: caseId } = useParams();
   const navigate = useNavigate();
   const [caseIDs, setCaseIDs] = useState([]);
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [keywordContent, setKeywordContent] = useState("");
-  const [keyword, setKeyword] = useState("事實及理由");
+  const [keyword, setKeyword] = useState(basicKeywordList[0]);
+  const [keywordList, setKeywordList] = useState([]);
 
-  const basicKeywordList = ["事實及理由, 事實, 理由", "得心證", "慰撫金"];
+  // Get all keywords
+  useEffect(() => {
+    keywordService
+      .getKeywords()
+      .then((response) => {
+        setKeywordList(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching keywords:", error);
+      });
+  }, []);
 
   // Fetch all case IDs
   useEffect(() => {
@@ -214,6 +227,15 @@ const Cases = () => {
             {basicKeywordList.map((k, index) => (
               <option key={index} value={k} selected={k === keyword}>
                 {k}
+              </option>
+            ))}
+            {keywordList.map((k) => (
+              <option
+                key={k.id}
+                value={k.keyword}
+                selected={k.keyword === keyword}
+              >
+                {k.keyword}
               </option>
             ))}
           </select>

@@ -37,3 +37,10 @@ model Case {
   userId    Int
   user      User     @relation(fields: [userId], references: [id]) // Relates each case to a user
 }
+
+model Keyword {
+  id        Int      @id @default(autoincrement())
+  keyword   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -5,6 +5,7 @@ import cors from "cors";
 import initializePassport from "./config/passport.js";
 import usersRouter from "./routes/users.js";
 import casesRouter from "./routes/cases.js";
+import keywordRouter from "./routes/keywordRouter.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(passport.session());
 // Routes
 app.use("/api/users", usersRouter);
 app.use("/api/cases", casesRouter);
+app.use("/api/keywords", keywordRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, "0.0.0.0", () => {

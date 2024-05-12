@@ -25,14 +25,15 @@
 
 ## route
 
-- `http://localhost:3001/users`
+- `http://localhost:3001/api/users`
 
   - GET
   - POST
   - PUT
   - DEL
 
-- `http://localhost:3001/cases/`
+- `http://localhost:3001/api/cases/`
+
   - POST: `/` (create a new case)
     ```
     {
@@ -53,6 +54,12 @@
   - GET: `/all-id` (get id list)
   - PUT: `/update/:id` (update case by id)
   - DEL: `/delete/:id` (delete case by id)
+
+- `http://localhost:3001/api/keywords/`
+  - POST: `/`
+  - GET: `/list` (get all keywords)
+  - PUT: `/update/:id`
+  - DEL: `/delete/:id`
 
 # Frontend
 

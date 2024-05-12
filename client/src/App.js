@@ -16,6 +16,7 @@ import Users from "./components/auth/Users";
 import Cases from "./components/case/Cases";
 import CaseList from "./components/case/CaseList";
 import AddCase from "./components/case/AddCase";
+import KeywordView from "./components/keyword/KeywordView";
 
 function App() {
   const userRole = authService.getUserRole();
@@ -60,6 +61,9 @@ function App() {
               {/* Nav Link with super-user */}
               {userRole === "super-user" && (
                 <>
+                  <Nav.Link as={Link} to="/keyword">
+                    關鍵字
+                  </Nav.Link>
                   <NavDropdown title="用戶管理" id="basic-nav-dropdown">
                     <NavDropdown.Item href="/register">
                       新增用戶
@@ -142,6 +146,14 @@ function App() {
           element={
             <PrivateRoute>
               <AddCase />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/keyword"
+          element={
+            <PrivateRoute>
+              <KeywordView />
             </PrivateRoute>
           }
         />

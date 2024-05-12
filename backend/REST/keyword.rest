@@ -1,0 +1,33 @@
+# Create a keyword
+POST http://localhost:3001/api/keywords
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE1NTM1NDMxLCJleHAiOjE3MTU1MzkwMzF9.qiA0spOGTlTum5M_POw_nQTn1DTClIORZV3DO4rFzm8
+
+{
+  "keyword": "test2"
+}
+
+###
+
+# Get all keywords
+GET http://localhost:3001/api/keywords/list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE1NTM1NDMxLCJleHAiOjE3MTU1MzkwMzF9.qiA0spOGTlTum5M_POw_nQTn1DTClIORZV3DO4rFzm8
+
+
+###
+
+# Update a keyword
+PUT http://localhost:3001/api/keywords/update/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE1NTM1NDMxLCJleHAiOjE3MTU1MzkwMzF9.qiA0spOGTlTum5M_POw_nQTn1DTClIORZV3DO4rFzm8
+
+{
+  "keyword": "test2"
+}
+
+###
+
+# Delete a keyword
+DELETE http://localhost:3001/api/keywords/delete/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6InN1cGVyLXVzZXIifSwiaWF0IjoxNzE1NTM1NDMxLCJleHAiOjE3MTU1MzkwMzF9.qiA0spOGTlTum5M_POw_nQTn1DTClIORZV3DO4rFzm8
