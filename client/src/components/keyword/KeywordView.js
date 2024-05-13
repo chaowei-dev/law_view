@@ -5,11 +5,20 @@ import { Container, Modal, Form, Button, Dropdown } from "react-bootstrap";
 const KeywordView = () => {
   const [keywordList, setKeywordList] = useState([]);
   const [editingShow, setEditingShow] = useState(false);
-  const [currentKeyword, setCurrentKeyword] = useState(null); // To track which keyword is being edited
+  // const [currentKeyword, setCurrentKeyword] = useState(null); // To track which keyword is being edited
+  const [currentData, setCurrentData] = useState({
+    id: "",
+    keyword: "",
+    pattern: "",
+  });
   // const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
   const [errorBox, setErrorBox] = useState("");
   const [messageBox, setMessageBox] = useState("");
-  const [newKeyword, setNewKeyword] = useState("");
+  // const [newKeyword, setNewKeyword] = useState("");
+  const [newData, setNewData] = useState({
+    keyword: "",
+    pattern: "",
+  });
   const [createShow, setCreateShow] = useState(false);
 
   // Fetch keywords on component mount
@@ -70,7 +79,10 @@ const KeywordView = () => {
   // Edit keyword
   const handleEditSubmit = () => {
     keywordService
-      .updateKeyword(currentKeyword.id, { keyword: currentKeyword.keyword })
+      .updateKeyword(currentData.id, {
+        keyword: currentData.keyword,
+        pattern: currentData.pattern,
+      })
       .then(() => {
         setEditingShow(false);
         fetchKeywords();
@@ -85,7 +97,7 @@ const KeywordView = () => {
   // Create keyword
   const handleCreateSubmit = () => {
     keywordService
-      .createKeyword({ keyword: newKeyword })
+      .createKeyword(newData)
       .then(() => {
         setCreateShow(false);
         fetchKeywords();
@@ -107,6 +119,7 @@ const KeywordView = () => {
         <thead>
           <tr>
             <th>Keyword</th>
+            <th>Pattern</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -114,24 +127,8 @@ const KeywordView = () => {
           {keywordList.map((keyword) => (
             <tr key={keyword._id}>
               <td>{keyword.keyword}</td>
+              <td>{keyword.pattern}</td>
               <td>
-                {/* <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setEditingShow(true);
-                    setCurrentKeyword(keyword);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => {
-                    deleteKeyword(keyword.id);
-                  }}
-                >
-                  Delete
-                </button> */}
                 <Dropdown>
                   <Dropdown.Toggle
                     variant="secondary"
@@ -144,7 +141,11 @@ const KeywordView = () => {
                     <Dropdown.Item
                       onClick={() => {
                         setEditingShow(true);
-                        setCurrentKeyword(keyword);
+                        setCurrentData({
+                          id: keyword.id,
+                          keyword: keyword.keyword,
+                          pattern: keyword.pattern,
+                        });
                       }}
                     >
                       Edit Keyword
@@ -164,7 +165,7 @@ const KeywordView = () => {
         </tbody>
       </table>
       {/* Edit Modal */}
-      {editingShow && currentKeyword && (
+      {editingShow && currentData && (
         <Modal
           size="lg"
           aria-labelledby="contained-modal-title-vcenter"
@@ -183,14 +184,20 @@ const KeywordView = () => {
                 <Form.Label>Keyword</Form.Label>
                 <Form.Control
                   type="text"
-                  value={currentKeyword.keyword}
+                  value={currentData.keyword}
                   onChange={(e) =>
-                    setCurrentKeyword({
-                      ...currentKeyword,
-                      keyword: e.target.value,
-                    })
+                    setCurrentData({ ...currentData, keyword: e.target.value })
                   }
-                  placeholder="Enter keyword"
+                  placeholder="Enter keyword*"
+                />
+                <Form.Label>Regex Pattern</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={currentData.pattern}
+                  onChange={(e) =>
+                    setCurrentData({ ...currentData, pattern: e.target.value })
+                  }
+                  placeholder="Enter regex pattern (optional)"
                 />
               </Form.Group>
             </Form>
@@ -220,12 +227,23 @@ const KeywordView = () => {
           <Modal.Body>
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Keyword</Form.Label>
+                <Form.Label>Keyword*</Form.Label>
                 <Form.Control
                   type="text"
-                  value={newKeyword}
-                  onChange={(e) => setNewKeyword(e.target.value)}
-                  placeholder="Enter keyword"
+                  value={newData.keyword}
+                  onChange={(e) =>
+                    setNewData({ ...newData, keyword: e.target.value })
+                  }
+                  placeholder="Enter keyword*"
+                />
+                <Form.Label>Regex Pattern (option)</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={newData.pattern}
+                  onChange={(e) =>
+                    setNewData({ ...newData, pattern: e.target.value })
+                  }
+                  placeholder="Enter regex pattern (optional)"
                 />
               </Form.Group>
             </Form>

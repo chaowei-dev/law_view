@@ -4,9 +4,10 @@ import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
 import caseService from "../../services/caseService";
 import keywordService from "../../services/keywordService";
+import EditCase from "./EditCase";
 
 const Cases = () => {
-  const basicKeywordList = ["事實及理由, 事實, 理由", "得心證", "慰撫金"];
+  // const basicKeywordList = ["事實及理由, 事實, 理由", "得心證", "慰撫金"];
 
   const { id: caseId } = useParams();
   const navigate = useNavigate();
@@ -14,8 +15,10 @@ const Cases = () => {
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [keywordContent, setKeywordContent] = useState("");
-  const [keyword, setKeyword] = useState(basicKeywordList[0]);
+  const [keywordText, setKeywordText] = useState("");
   const [keywordList, setKeywordList] = useState([]);
+  const [originalContent, setOriginalContent] = useState("");
+  const [editingWindowShow, setEditingWindowShow] = useState(false);
 
   // Get all keywords
   useEffect(() => {
@@ -23,6 +26,7 @@ const Cases = () => {
       .getKeywords()
       .then((response) => {
         setKeywordList(response.data);
+        setKeywordText(response.data[0].keyword);
       })
       .catch((error) => {
         console.error("Error fetching keywords:", error);
@@ -50,68 +54,102 @@ const Cases = () => {
       });
   }, [caseId]);
 
-  // Set jfull content
-  useEffect(() => {
+  // Fetch content for the current case by index
+  const fetchContent = () => {
     if (caseIDs.length > 0 && caseIDs[currentIndex]) {
       caseService
         .getCaseById(caseIDs[currentIndex].id)
         .then((response) => {
-          // Store current case data
           setCurrentCase(response.data);
+          setOriginalContent(response.data.jfull);
         })
         .catch((error) => {
           console.error("Error fetching case:", error);
         });
     }
+  };
+  useEffect(() => {
+    fetchContent();
   }, [currentIndex, caseIDs]);
 
   // Set keyword jfull content
-  // Set keyword full content
   useEffect(() => {
     if (currentCase && currentCase.jfull) {
       let regexPattern;
 
       // Determine the regex pattern based on the selected keyword
-      if (keyword === "事實及理由, 事實, 理由") {
-        regexPattern = /事\s*實|理\s*由/gi; // Regex pattern to find "事實及理由"
+      // if (keywordText === "事實及理由, 事實, 理由") {
+      //   regexPattern = /事\s*實|理\s*由/gi; // Regex pattern to find "事實及理由"
+      // } else {
+      //   regexPattern = new RegExp(keywordText, "gi"); // Regex pattern for a specific keyword
+      // }
+
+      // Find the keyword in the content and get the text after it
+      // if pattern.value of keywordText is existed, then use pattern value
+      // else create a new RegExp
+      const keywordObj = keywordList.find((k) => k.keyword === keywordText);
+
+      if (keywordObj && keywordObj.pattern) {
+        regexPattern = new RegExp(keywordObj.pattern, "gi");
       } else {
-        regexPattern = new RegExp(keyword, "gi"); // Regex pattern for a specific keyword
+        regexPattern = new RegExp(keywordText, "gi");
       }
+
+      console.log("regexPattern:", regexPattern);
 
       // Find the keyword in the content and get the text after it
       const match = regexPattern.exec(currentCase.jfull);
 
       if (match) {
+        // Get the text after the keyword
         const startIndex = match.index;
         const textAfterKeyword = currentCase.jfull.substring(startIndex);
 
-        // Replace the first occurrence of the keyword with a highlighted version
-        const highlightedContent = textAfterKeyword.replace(
+        // Highlight the keyword in the original text
+        const highlightedOriginalContent = currentCase.jfull.replace(
           regexPattern,
           (match) => `<mark><b>${match}</b></mark>`
         );
+        setOriginalContent(highlightedOriginalContent.trim());
 
-        // Set the keyword content with highlighted keyword and text after it
-        setKeywordContent(highlightedContent.trim());
+        // Highlight the keyword in the after text
+        const highlightedKeywordContent = textAfterKeyword.replace(
+          regexPattern,
+          (match) => `<mark><b>${match}</b></mark>`
+        );
+        setKeywordContent(highlightedKeywordContent.trim());
       } else {
         // Provide a message if the section is not found
         setKeywordContent(
-          `Section '${keyword}' not found in the provided text.`
+          `Section '${keywordText}' not found in the provided text.`
         );
       }
     }
-  }, [currentCase, keyword]);
+  }, [currentCase, keywordText]);
 
   // Handle keyword selection change
   const handleKeywordChange = (e) => {
+    // Get selected values
     const options = e.target.options;
+
+    // Get selected values
     const selectedValues = [];
+
+    // Loop through the options and get the selected values
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
         selectedValues.push(options[i].value);
       }
     }
-    setKeyword(selectedValues[0]); // Assuming single selection for now
+
+    // Set the keyword state
+    setKeywordText(selectedValues[0]); // Assuming single selection for now
+  };
+
+  // EDITING
+  const handleEditClick = (c) => {
+    setCurrentCase(c);
+    setEditingWindowShow(true);
   };
 
   // Navigation handlers
@@ -148,8 +186,31 @@ const Cases = () => {
   return (
     <Container>
       <Row className="mb-4 mt-4">
+        {/* Basic information */}
+        <Col className="align-items-center">
+          <Card>
+            <Card.Body>
+              <Card.Title>
+                <b>{currentCase.jid}</b>
+              </Card.Title>
+              <Card.Text>
+                {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
+                號 ({currentCase.jdate}), {currentCase.jtitle}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Edit Button */}
+        <Col className="d-flex justify-content-center align-items-center">
+          <Button
+            variant="secondary"
+            onClick={() => handleEditClick(currentCase)}
+          >
+            編輯
+          </Button>{" "}
+        </Col>
         {/* Navigation */}
-        <Col className="d-flex align-items-center">
+        <Col className="d-flex justify-content-center align-items-center">
           <Button
             variant="link"
             onClick={handlePrevCase}
@@ -175,20 +236,6 @@ const Cases = () => {
             <ArrowRightCircle size={24} />
           </Button>
         </Col>
-        {/* Basic information */}
-        <Col className="align-items-center">
-          <Card>
-            <Card.Body>
-              <Card.Title>
-                <b>{currentCase.jid}</b>
-              </Card.Title>
-              <Card.Text>
-                {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
-                號 ({currentCase.jdate}), {currentCase.jtitle}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
       </Row>
       <Row className="mb-2">
         <Col>
@@ -210,7 +257,7 @@ const Cases = () => {
               whiteSpace: "pre-wrap",
             }}
             dangerouslySetInnerHTML={{
-              __html: currentCase.jfull || "No Content Available",
+              __html: originalContent || "No Content Available",
             }}
           ></div>
         </Col>
@@ -220,22 +267,22 @@ const Cases = () => {
             style={{ height: "100px" }}
             className="form-select mb-3"
             aria-label="Select a section"
-            value={keyword} // This controls which option is selected
+            value={keywordText} // This controls which option is selected
             onChange={handleKeywordChange} // This updates the state on change
             multiple
           >
-            {basicKeywordList.map((k, index) => (
+            {/* {basicKeywordList.map((k, index) => (
               <option key={index} value={k} selected={k === keyword}>
                 {k}
               </option>
-            ))}
+            ))} */}
             {keywordList.map((k) => (
               <option
                 key={k.id}
                 value={k.keyword}
-                selected={k.keyword === keyword}
+                selected={k.keyword === keywordText}
               >
-                {k.keyword}
+                {k.keyword} {k.pattern && ` - (${k.pattern})`}
               </option>
             ))}
           </select>
@@ -257,6 +304,15 @@ const Cases = () => {
           </div>
         </Col>
       </Row>
+      {/* Editing modal */}
+      {editingWindowShow && currentCase && (
+        <EditCase
+          show={editingWindowShow}
+          onHide={() => setEditingWindowShow(false)}
+          lawCase={currentCase}
+          onSave={fetchContent}
+        />
+      )}
     </Container>
   );
 };

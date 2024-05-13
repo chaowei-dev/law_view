@@ -8,6 +8,26 @@ const prisma = new PrismaClient();
 // Table:
 // id | keyword | createdAt | updatedAt
 
+// Create a initial keyword list
+// keyword: "事實及理由", pattern:"/事\s*實|理\s*由/gi"
+const createInitialKeywords = async () => {
+  const keyword = await prisma.keyword.findUnique({
+    where: { keyword: "事實及理由" },
+  });
+  if (!keyword) {
+    console.log("事實及理由 not found, creating...");
+    await prisma.keyword.create({
+      data: {
+        keyword: "事實及理由",
+        pattern: "事\\s*實|理\\s*由",
+      },
+    });
+  } else {
+    console.log("事實及理由 already exists!");
+  }
+};
+await createInitialKeywords();
+
 // Get all keywords
 router.get("/list", authenticateToken, async (req, res) => {
   try {
@@ -26,7 +46,7 @@ router.post(
   authenticateToken,
   checkRole(["super-user"]),
   async (req, res) => {
-    const { keyword } = req.body;
+    const { keyword, pattern } = req.body;
 
     // Check if keyword is provided
     if (!keyword) {
@@ -39,6 +59,7 @@ router.post(
       const newKeyword = await prisma.keyword.create({
         data: {
           keyword,
+          pattern,
         },
       });
       res.json(newKeyword);
@@ -57,7 +78,7 @@ router.put(
   checkRole(["super-user"]),
   async (req, res) => {
     const { id } = req.params;
-    const { keyword } = req.body;
+    const { keyword, pattern } = req.body;
 
     // Check if keyword is provided
     if (!keyword) {
@@ -73,6 +94,7 @@ router.put(
         },
         data: {
           keyword,
+          pattern,
         },
       });
       res.json(updatedKeyword);

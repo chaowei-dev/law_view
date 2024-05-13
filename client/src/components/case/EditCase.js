@@ -60,20 +60,6 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {/* <Form>
-          <Form.Group className="mb-3">
-            <Form.Control
-              aria-label="Year:"
-              aria-describedby="inputGroup-sizing-sm"
-              type="text"
-              value={formCase.JYEAR}
-              onChange={(e) =>
-                setFormCase((prev) => ({ ...prev, JYEAR: e.target.value }))
-              }
-              placeholder="Enter Year"
-            />
-          </Form.Group>
-        </Form> */}
         <InputGroup className="mb-3">
           <InputGroup.Text id="inputGroup-sizing-sm">JID:</InputGroup.Text>
           <Form.Control
@@ -147,19 +133,18 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
             placeholder="Enter Title"
           />
         </InputGroup>
-        <InputGroup className="mb-3">
-          <InputGroup.Text id="inputGroup-sizing-sm">Remarks:</InputGroup.Text>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+          <Form.Label>Remarks:</Form.Label>
           <Form.Control
-            aria-label="Remarks"
-            aria-describedby="inputGroup-sizing-sm"
-            type="text"
+            as="textarea"
+            rows={5}
             value={formCase.REMARKS}
             onChange={(e) =>
               setFormCase((prev) => ({ ...prev, REMARKS: e.target.value }))
             }
             placeholder="Enter Remarks"
           />
-        </InputGroup>
+        </Form.Group>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onHide}>
