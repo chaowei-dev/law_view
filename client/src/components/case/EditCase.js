@@ -13,9 +13,15 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
     JTITLE: "",
     REMARKS: "",
   });
+  const [createdAt, setCreatedAt] = useState("");
+  const [updatedAt, setUpdatedAt] = useState("");
 
   useEffect(() => {
     if (lawCase) {
+      // Log
+      console.log("lawCase:", lawCase);
+
+      // Set the created at date
       setFormCase({
         ID: lawCase.id,
         JID: lawCase.jid,
@@ -26,12 +32,23 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
         JTITLE: lawCase.jtitle,
         REMARKS: lawCase.remarks,
       });
+
+      // Format the date and time to Taiwan time
+      setCreatedAt(formatTime(lawCase.createdAt));
+      setUpdatedAt(formatTime(lawCase.updatedAt));
     }
   }, [lawCase]);
 
-  useEffect(() => {
-    console.log("formCase:", formCase);
-  }, [formCase]);
+  const formatTime = (time) => {
+    const date = new Date(time);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    return `${year}/${month}/${day} (${hours}:${minutes})`;
+  };
 
   const handleSubmit = () => {
     // Pass the formCase to the service
@@ -137,7 +154,7 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
           <Form.Label>Remarks:</Form.Label>
           <Form.Control
             as="textarea"
-            rows={5}
+            rows={8}
             value={formCase.REMARKS}
             onChange={(e) =>
               setFormCase((prev) => ({ ...prev, REMARKS: e.target.value }))
@@ -145,6 +162,9 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
             placeholder="Enter Remarks"
           />
         </Form.Group>
+        <Form.Label>
+          建立日期: {createdAt}, 更新日期: {updatedAt}
+        </Form.Label>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onHide}>

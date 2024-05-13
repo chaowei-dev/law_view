@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Col, Container, Row, Card } from "react-bootstrap";
 import { FaFileAlt } from "react-icons/fa";
 import { GiConfirmed } from "react-icons/gi";
+import { MdError } from "react-icons/md";
 import caseService from "../../services/caseService";
 import authService from "../../services/authService";
 
@@ -12,6 +13,8 @@ const AddCase = () => {
   const [totalFiles, setTotalFiles] = useState(0);
   const [currentFile, setCurrentFile] = useState(0);
   const [sendState, setSendState] = useState("idle"); // "idle," "preparing," "sending," or "success"
+  const [errorCaseList, setErrorCaseList] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]); // Track uploaded files and their statuses
 
   // Get user ID when component mounts
   useEffect(() => {
@@ -34,6 +37,12 @@ const AddCase = () => {
 
   // Initialize progress for each file
   const initializeProgress = (fileArray) => {
+    // Clean up error case list
+    setErrorCaseList([]);
+
+    // Reset uploaded files
+    setUploadedFiles([]);
+
     // Set total files count
     setTotalFiles(fileArray.length);
 
@@ -62,7 +71,7 @@ const AddCase = () => {
     setSendState("sending");
 
     for (let file of fileArray) {
-      // Ulpoad file to the API
+      // Upload file to the API
       await uploadFile(file);
 
       // delay 0.1s
@@ -121,12 +130,28 @@ const AddCase = () => {
 
         // Increment current file count
         setCurrentFile((prevCurrentFile) => prevCurrentFile + 1);
+
+        // Add to uploaded files
+        setUploadedFiles((prevUploadedFiles) => [
+          { name: file.name, status: "success" },
+          ...prevUploadedFiles,
+        ]);
       } else {
         throw new Error("API response not OK");
       }
     } catch (error) {
       console.error(`Error uploading ${file.name}:`, error);
       updateProgress(file.name, 0);
+      setErrorCaseList((prevErrorCaseList) => [
+        ...prevErrorCaseList,
+        file.name,
+      ]);
+
+      // Add to uploaded files with error status
+      setUploadedFiles((prevUploadedFiles) => [
+        { name: file.name, status: "error" },
+        ...prevUploadedFiles,
+      ]);
     }
   };
 
@@ -138,7 +163,7 @@ const AddCase = () => {
   };
 
   const getStatusMessage = () => {
-    if (sendState === "preparing") return "檔案上傳成功，等待寫入資料庫！";
+    if (sendState === "preparing") return "檔案處理成功，等待寫入資料庫...";
     if (sendState === "sending") return "資料寫入中...";
     if (sendState === "success") return "資料寫入成功！";
     return "";
@@ -146,15 +171,11 @@ const AddCase = () => {
 
   return (
     <Container>
-      <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Row className="mt-3">
         <h2 className="text-center">新增案件</h2>
       </Row>
       {/* File Upload Component */}
-
-      <Row
-        className="justify-content-md-center"
-        style={{ marginBottom: "20px" }}
-      >
+      <Row className="justify-content-md-center mt-5">
         <Col xs lg="2" className="align-self-center"></Col>
         <Col xs lg="2">
           <div>
@@ -176,16 +197,16 @@ const AddCase = () => {
         </Col>
       </Row>
       {/* Total progress Display */}
-      <Row style={{ marginBottom: "20px" }}>
+      <Row className="mt-5">
         <Card style={{ padding: "20px" }}>
           <Card.Text>
             <p className="text-center">{getStatusMessage()}</p>
             <p className="text-center">
               {currentFile}/{totalFiles}
             </p>
-            <div class="progress">
+            <div className="progress">
               <div
-                class="progress-bar bg-danger"
+                className="progress-bar bg-danger"
                 role="progressbar"
                 style={{ width: `${(currentFile / totalFiles) * 100}%` }}
                 aria-valuenow="100"
@@ -197,30 +218,46 @@ const AddCase = () => {
         </Card>
       </Row>
       {/* Case by Case Progress Display */}
-      <Row style={{ marginTop: "40px" }} className="justify-content-md-center">
-        <Col
-          xl="6"
-          style={{
-            // padding: "10px",
-            // border: "1px solid #dee2e6",
-            maxHeight: "600px",
-            overflowY: "scroll",
-            // whiteSpace: "pre-wrap",
-          }}
-        >
-          <div>
-            <p className="font-weight-bold">Case list:</p>
-
-            {files.map((file) => (
-              <div key={file.name} className="d-flex align-items-center mb-2">
-                <div className="me-2">
-                  <FaFileAlt />
+      <Row className="justify-content-md-center mt-5">
+        <Col xl="4">
+          <p className="font-weight-bold">Case list:</p>
+          <div
+            style={{
+              maxHeight: "500px",
+              overflowY: "scroll",
+            }}
+          >
+            {uploadedFiles
+              .filter((file) => file.status !== "error")
+              .map((file, index) => (
+                <div key={index} className="d-flex align-items-center mb-2">
+                  <div className="me-2">
+                    <FaFileAlt />
+                  </div>
+                  <div className="flex-grow-1 me-2">{file.name}</div>
+                  <div className="flex-grow-1">
+                    {file.status === "success" && (
+                      <GiConfirmed style={{ color: "green" }} />
+                    )}
+                  </div>
                 </div>
-                <div className="flex-grow-1 me-2">{file.name}</div>
-                <div className="flex-grow-1">
-                  {progress[file.name] === 100 && (
-                    <GiConfirmed style={{ color: "green" }} />
-                  )}
+              ))}
+          </div>
+        </Col>
+        {/* Error List */}
+        <Col xl="4">
+          <p className="font-weight-bold">Error Cases:</p>
+          <div
+            style={{
+              maxHeight: "500px",
+              overflowY: "scroll",
+            }}
+          >
+            {errorCaseList.map((fileName, index) => (
+              <div key={index} className="d-flex align-items-center mb-2">
+                <div className="flex-grow-1 me-2">{fileName}</div>
+                <div className="me-2">
+                  <MdError style={{ color: "red" }} />
                 </div>
               </div>
             ))}

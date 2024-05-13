@@ -144,6 +144,7 @@ const CaseList = () => {
                 <th className="text-center">字號</th>
                 <th className="text-center">日期</th>
                 <th className="text-center">案由</th>
+                <th className="text-center">備註</th>
                 <th className="text-center">操作</th>
               </tr>
             </thead>
@@ -159,6 +160,7 @@ const CaseList = () => {
                   </th>
                   <th>{c.jdate}</th>
                   <th>{c.jtitle}</th>
+                  <th>{c.remarks}</th>
                   <th>
                     {userRole === "super-user" && (
                       <Dropdown>

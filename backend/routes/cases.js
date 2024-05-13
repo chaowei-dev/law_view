@@ -28,6 +28,8 @@ router.get("/list/:size/:page", authenticateToken, async (req, res) => {
         jdate: true,
         jtitle: true,
         remarks: true,
+        createdAt: true,
+        updatedAt: true,
       },
       skip: offset,
       take: intSize,
