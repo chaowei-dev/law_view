@@ -73,7 +73,7 @@ router.post(
           jdate,
           jtitle,
           jfull,
-          remarks,
+          remarks: remarks ? remarks : "",
           userId,
         },
       });

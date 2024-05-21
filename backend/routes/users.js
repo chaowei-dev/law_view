@@ -10,11 +10,12 @@ const prisma = new PrismaClient();
 
 // Check admin user
 // If not exists, create one
-const createAdminUser = async () => {
-  const user = await prisma.user.findUnique({ where: { username: "admin" } });
-  if (!user) {
+const createInitUser = async () => {
+  // Check admin user existed
+  const adminUser = await prisma.user.findUnique({ where: { username: "admin" } });
+  if (!adminUser) {
     console.log("No admin user found, creating one...");
-    const hashedPassword = await bcrypt.hash("admin", 12);
+    const hashedPassword = await bcrypt.hash("tkuntpu", 12);
     await prisma.user.create({
       data: {
         username: "admin",
@@ -26,8 +27,25 @@ const createAdminUser = async () => {
   } else {
     console.log("Admin user already exists!");
   }
+
+  // Check normal user existed
+  const normalUser = await prisma.user.findUnique({ where: { username: "user" } });
+  if (!normalUser) {
+    console.log("No normal user found, creating one...");
+    const hashedPassword = await bcrypt.hash("tkuntpu", 12);
+    await prisma.user.create({
+      data: {
+        username: "user",
+        password: hashedPassword,
+        role: "user",
+      },
+    });
+    console.log("Normal user created!");
+  } else {
+    console.log("Normal user already exists!");
+  }
 };
-await createAdminUser();
+await createInitUser();
 
 router.post("/signup", async (req, res) => {
   const { username, password, role } = req.body;

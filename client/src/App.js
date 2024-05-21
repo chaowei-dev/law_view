@@ -2,7 +2,7 @@ import "./App.css";
 import React, { useEffect } from "react";
 
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import { VscLaw } from "react-icons/vsc";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -52,15 +52,16 @@ function App() {
                     <Nav.Link as={Link} to={"/cases/list/100/1"}>
                       案件列表
                     </Nav.Link>
-                    <Nav.Link as={Link} to="/cases/add">
-                      新增案件
-                    </Nav.Link>
+
                   </>
                 )}
               </>
               {/* Nav Link with super-user */}
               {userRole === "super-user" && (
                 <>
+                  <Nav.Link as={Link} to="/cases/add">
+                    新增案件
+                  </Nav.Link>
                   <Nav.Link as={Link} to="/keyword">
                     關鍵字
                   </Nav.Link>
@@ -108,7 +109,9 @@ function App() {
 
       {/* Routes */}
       <Routes>
+        <Route path="/" element={<Navigate to="/cases/view/1" />} />
         <Route path="/login" element={<Login />} />
+        {/* Super user auth */}
         <Route
           path="/register"
           element={
@@ -126,6 +129,23 @@ function App() {
           }
         />
         <Route
+          path="/cases/add"
+          element={
+            <SuperRoute>
+              <AddCase />
+            </SuperRoute>
+          }
+        />
+        <Route
+          path="/keyword"
+          element={
+            <PrivateRoute>
+              <KeywordView />
+            </PrivateRoute>
+          }
+        />
+        {/* Normal user auth */}
+        <Route
           path="/cases/view/:id"
           element={
             <PrivateRoute>
@@ -138,22 +158,6 @@ function App() {
           element={
             <PrivateRoute>
               <CaseList />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/cases/add"
-          element={
-            <PrivateRoute>
-              <AddCase />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/keyword"
-          element={
-            <PrivateRoute>
-              <KeywordView />
             </PrivateRoute>
           }
         />

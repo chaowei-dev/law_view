@@ -118,6 +118,7 @@ const AddCase = () => {
         jtitle: jsonData.JTITLE,
         jfull: jsonData.JFULL,
         userId: browserUserId,
+        remarks: ""
       };
 
       // Send case data to the API
