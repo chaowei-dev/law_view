@@ -118,7 +118,7 @@ const AddCase = () => {
         jtitle: jsonData.JTITLE,
         jfull: jsonData.JFULL,
         userId: browserUserId,
-        remarks: ""
+        remarks: "",
       };
 
       // Send case data to the API
@@ -220,7 +220,7 @@ const AddCase = () => {
       </Row>
       {/* Case by Case Progress Display */}
       <Row className="justify-content-md-center mt-5">
-        <Col xl="4">
+        {/* <Col xl="4">
           <p className="font-weight-bold">Case list:</p>
           <div
             style={{
@@ -244,7 +244,7 @@ const AddCase = () => {
                 </div>
               ))}
           </div>
-        </Col>
+        </Col> */}
         {/* Error List */}
         <Col xl="4">
           <p className="font-weight-bold">Error Cases:</p>

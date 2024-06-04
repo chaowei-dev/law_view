@@ -13,10 +13,10 @@ const Cases = () => {
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [keywordContent, setKeywordContent] = useState("");
-  const [keywordText, setKeywordText] = useState("");
+  const [mainKeywordText, setMainKeywordText] = useState("原文");
+  const [secondKeywordText, setSecondKeywordText] = useState("無");
   const [keywordList, setKeywordList] = useState([]);
   const [oriHighlightContent, setOriHighlightContent] = useState("");
-  const [editingWindowShow, setEditingWindowShow] = useState(false);
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
   const [currentCaseRemarks, setCurrentCaseRemarks] = useState("");
@@ -27,7 +27,7 @@ const Cases = () => {
       .getKeywords()
       .then((response) => {
         setKeywordList(response.data);
-        setKeywordText(response.data[0]?.keyword || "");
+        // setMainKeywordText(response.data[0]?.keyword || "");
       })
       .catch((error) => {
         console.error("Error fetching keywords:", error);
@@ -82,62 +82,103 @@ const Cases = () => {
   // Update keyword content when current case or keyword text changes
   useEffect(() => {
     if (currentCase && currentCase.jfull) {
-      let regexPattern;
+      let mainRegexPattern;
+      let secondRegexPattern;
 
       // If the keyword is "原文", display the full content
-      if (keywordText === "原文") {
+      if (mainKeywordText === "原文") {
         setKeywordContent(currentCase.jfull);
         setShowTrimmedContent(false);
         setShowTrimButton(false);
         return;
-      } else{
+      } else {
         setShowTrimButton(true);
       }
 
-      // Find the keyword object based on the keyword text
-      const keywordObj = keywordList.find((k) => k.keyword === keywordText);
+      // Main keyword regex pattern
+      const mainKeywordObj = keywordList.find(
+        (k) => k.keyword === mainKeywordText
+      );
 
-      // Create a regex pattern based on the keyword object or the keyword text
-      regexPattern =
-        keywordObj && keywordObj.pattern
-          ? new RegExp(keywordObj.pattern, "gi")
-          : new RegExp(keywordText, "gi");
+      mainRegexPattern =
+        mainKeywordObj && mainKeywordObj.pattern
+          ? new RegExp(mainKeywordObj.pattern, "gi")
+          : new RegExp(mainKeywordText, "gi");
 
-      console.log("regexPattern:", regexPattern);
-
-      // Find the keyword in the original content
-      const match = regexPattern.exec(currentCase.jfull);
-
-      // Highlight the keyword in the original content
-      if (match) {
-        // Get the text after the keyword
-        const startIndex = match.index;
-        const textAfterKeyword = currentCase.jfull.substring(startIndex);
-
-        // Highlight the keyword in the original content
-        const highlightedOriginalContent = currentCase.jfull.replace(
-          regexPattern,
-          (match) => `<mark><b>${match}</b></mark>`
-        );        
-        setOriHighlightContent(highlightedOriginalContent.trim());
-
-        // Highlight the keyword in the text after the keyword
-        const highlightedKeywordContent = textAfterKeyword.replace(
-          regexPattern,
-          (match) => `<mark><b>${match}</b></mark>`
-        );
-        setKeywordContent(highlightedKeywordContent.trim());
-      } else {
-        setKeywordContent(
-          `Section '${keywordText}' not found in the provided text.`
-        );
+      // If second keyword is "無"
+      // Highlight the main keyword only
+      if (secondKeywordText === "無") {
+        highlightContent(mainRegexPattern, null);
+        return;
       }
+
+      // Second keyword regex pattern
+      const secondKeywordObj = keywordList.find(
+        (k) => k.keyword === secondKeywordText
+      );
+
+      secondRegexPattern =
+        secondKeywordObj && secondKeywordObj.pattern
+          ? new RegExp(secondKeywordObj.pattern, "gi")
+          : new RegExp(secondKeywordText, "gi");
+
+      // Highlight the keywords
+      highlightContent(mainRegexPattern, secondRegexPattern);
     }
-  }, [currentCase, keywordText, keywordList]);
+  }, [currentCase, mainKeywordText, secondKeywordText, keywordList]);
+
+  // Highlight the keywords in the original content
+  const highlightContent = (mainRegexPattern, secondRegexPattern) => {
+    if (!mainRegexPattern && !secondRegexPattern) return;
+
+    // 1. Original content highlighting
+    let highlightedOriginalContent = currentCase.jfull;
+    if (mainRegexPattern) {
+      highlightedOriginalContent = highlightedOriginalContent.replace(
+        mainRegexPattern,
+        (match) => `<mark><b>${match}</b></mark>`
+      );
+    }
+
+    if (secondRegexPattern) {
+      highlightedOriginalContent = highlightedOriginalContent.replace(
+        secondRegexPattern,
+        (match) => `<mark><b>${match}</b></mark>`
+      );
+    }
+
+    setOriHighlightContent(highlightedOriginalContent.trim());
+
+    // 2. Trimmed content highlighting
+    const startIndex = mainRegexPattern
+      ? mainRegexPattern.exec(currentCase.jfull)?.index || 0
+      : 0;
+
+    const textAfterKeyword = currentCase.jfull.substring(startIndex);
+    let highlightedKeywordContent = textAfterKeyword;
+    if (mainRegexPattern) {
+      highlightedKeywordContent = highlightedKeywordContent.replace(
+        mainRegexPattern,
+        (match) => `<mark><b>${match}</b></mark>`
+      );
+    }
+
+    if (secondRegexPattern) {
+      highlightedKeywordContent = highlightedKeywordContent.replace(
+        secondRegexPattern,
+        (match) => `<mark><b>${match}</b></mark>`
+      );
+    }
+
+    setKeywordContent(highlightedKeywordContent.trim());
+  };
 
   // Handler for keyword selection change
-  const handleKeywordChange = (e) => {
-    setKeywordText(e.target.value);
+  const handleMainKeywordChange = (e) => {
+    setMainKeywordText(e.target.value);
+  };
+  const handleSecondKeywordChange = (e) => {
+    setSecondKeywordText(e.target.value);
   };
 
   // Handler for saving remarks
@@ -248,13 +289,13 @@ const Cases = () => {
         {/* Keyword selection */}
         <Col xs={12} sm={6} className="mb-3">
           <div className="d-flex align-items-center">
-            <p className="mb-0 me-2">關鍵字:</p>
+            <p className="mb-0 me-2">主要關鍵字:</p>
             <select
               style={{ maxWidth: "300px" }}
               className="form-select"
               aria-label="Default select example"
-              value={keywordText}
-              onChange={handleKeywordChange}
+              value={mainKeywordText}
+              onChange={handleMainKeywordChange}
             >
               <option value="原文">原文</option>
               {keywordList.map((k) => (
@@ -262,6 +303,27 @@ const Cases = () => {
                   {k.keyword} {k.pattern && ` - (${k.pattern})`}
                 </option>
               ))}
+            </select>
+          </div>
+          {/* Second keyword selection */}
+          <div className="d-flex align-items-center mt-2">
+            <p className="mb-0 me-2">次要關鍵字:</p>
+            <select
+              style={{ maxWidth: "300px" }}
+              className="form-select"
+              aria-label="Default select example"
+              value={secondKeywordText}
+              onChange={handleSecondKeywordChange}
+            >
+              <option>無</option>
+              {keywordList.map(
+                (k) =>
+                  k.keyword !== mainKeywordText && (
+                    <option key={k.id} value={k.keyword}>
+                      {k.keyword} {k.pattern && ` - (${k.pattern})`}
+                    </option>
+                  )
+              )}
             </select>
           </div>
         </Col>

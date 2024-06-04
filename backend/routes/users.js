@@ -12,7 +12,9 @@ const prisma = new PrismaClient();
 // If not exists, create one
 const createInitUser = async () => {
   // Check admin user existed
-  const adminUser = await prisma.user.findUnique({ where: { username: "admin" } });
+  const adminUser = await prisma.user.findUnique({
+    where: { username: "admin" },
+  });
   if (!adminUser) {
     console.log("No admin user found, creating one...");
     const hashedPassword = await bcrypt.hash("tkuntpu", 12);
@@ -29,7 +31,9 @@ const createInitUser = async () => {
   }
 
   // Check normal user existed
-  const normalUser = await prisma.user.findUnique({ where: { username: "user" } });
+  const normalUser = await prisma.user.findUnique({
+    where: { username: "user" },
+  });
   if (!normalUser) {
     console.log("No normal user found, creating one...");
     const hashedPassword = await bcrypt.hash("tkuntpu", 12);
@@ -97,7 +101,7 @@ router.post("/login", (req, res, next) => {
 
       // Create a token
       const body = { id: user.id, username: user.username, role: user.role };
-      const token = jwt.sign({ user: body }, "secret_key", { expiresIn: "1h" });
+      const token = jwt.sign({ user: body }, "secret_key", { expiresIn: "4h" });
 
       // Log msg
       console.log("User logged in!");
