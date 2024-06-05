@@ -69,6 +69,13 @@
 - React Bootstrap Notifier
   - https://chadly.github.io/react-bs-notifier/
 
+# Postgresql
+
+- add .env:
+  - `DATABASE_URL="postgresql://user:passowrd@localhost:5432/law_view"`
+- npx prisma generate
+- npx prisma migrate dev --name init
+
 # Linux
 
 - Node
