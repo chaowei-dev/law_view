@@ -9,6 +9,12 @@ services:
     networks:
       - backend_network
     restart: always
+    command: >
+      sh -c "
+      npx prisma migrate deploy &&
+      npx prisma generate &&
+      node index.js
+      "
 
   client:
     build:
@@ -18,4 +24,10 @@ services:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - backend_network
     restart: always
+
+networks:
+  backend_network:
+    external: true

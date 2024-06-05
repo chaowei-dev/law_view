@@ -133,6 +133,5 @@ dist
 .DS_Store
 
 #　prisma
-migrations/
 # *.sqlite3
 backend/prisma/dev.sqlite3-journal
