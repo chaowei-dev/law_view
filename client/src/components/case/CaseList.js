@@ -37,7 +37,7 @@ const CaseList = () => {
   // Fetch case list
   const fetchCaseList = async () => {
     try {
-      const response = await caseService.getAllCases(pageSize, pageNum);
+      const response = await caseService.getAllCases(pageSize, pageNum, caseKeyword);
       setCaseList(response.data);
     } catch (error) {
       console.error("Error fetching cases:", error);
@@ -53,7 +53,7 @@ const CaseList = () => {
   useEffect(() => {
     const fetchNumberOfPages = async () => {
       try {
-        const response = await caseService.getNumberOfCases();
+        const response = await caseService.getNumberOfCasesByKeyword(caseKeyword);
         setTotalCases(response.data.count);
         setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
@@ -107,22 +107,22 @@ const CaseList = () => {
   };
 
   // Loading state
-  if (caseList.length === 0) {
-    return (
-      <Container>
-        <Row>
-          <Col>
-            <h1>Case List</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <p>Loading cases...</p>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+  // if (caseList.length === 0) {
+  //   return (
+  //     <Container>
+  //       <Row>
+  //         <Col>
+  //           <h1>Case List</h1>
+  //         </Col>
+  //       </Row>
+  //       <Row>
+  //         <Col>
+  //           <p>Not case contain keyword: "<b>{caseKeyword}</b>"</p>
+  //         </Col>
+  //       </Row>
+  //     </Container>
+  //   );
+  // }
 
   let serialNum = (pageNum - 1) * pageSize + 1;
 
@@ -130,9 +130,12 @@ const CaseList = () => {
     <Container>
       <Row style={{ marginTop: "20px" }}>
         <Col>
-          <CaseSearch />
+          <CaseSearch caseKeyword={caseKeyword} navigate={navigate} />
         </Col>
-        <Col className="d-flex justify-content-end">{paginationHtml}</Col>
+        <Col className="d-flex justify-content-end">
+          {paginationHtml}
+          <p className="ml-3 mt-2">{totalCases}筆</p>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -193,7 +196,7 @@ const CaseList = () => {
         <Col></Col>
         <Col className="d-flex justify-content-center">{paginationHtml}</Col>
         <Col className="d-flex justify-content-end">
-          <p className="mr-3 mt-2">共:{totalCases}筆</p>
+          
           {/* Dropdown for page limit */}
           <Form.Control
             as="select"

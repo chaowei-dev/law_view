@@ -17,8 +17,8 @@ const caseService = {
   },
 
   // /api/cases/page/{limit}/{page}
-  getAllCases: (size, page) => {
-    return axios.get(API_URL + "list/" + size + "/" + page, {
+  getAllCases: (size, page, caseKeyword) => {
+    return axios.get(API_URL + "list/" + size + "/" + page + "/" + caseKeyword, {
       headers: {
         Authorization:
           "Bearer " + JSON.parse(localStorage.getItem("user")).token,
@@ -29,6 +29,16 @@ const caseService = {
   // /api/cases/count
   getNumberOfCases: () => {
     return axios.get(API_URL + "count", {
+      headers: {
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    });
+  },
+
+  // api/cases/count/keyword/{searchKeyword}
+  getNumberOfCasesByKeyword: (searchKeyword) => {
+    return axios.get(API_URL + "count/keyword/" + searchKeyword, {
       headers: {
         Authorization:
           "Bearer " + JSON.parse(localStorage.getItem("user")).token,

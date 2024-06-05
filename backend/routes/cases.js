@@ -9,12 +9,24 @@ const prisma = new PrismaClient();
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull \ remarks \ createdAt | updatedAt \ userId(FK to user table)
 
 // Get all cases except jfull (every page have i items, use page to navigate)
-router.get("/list/:size/:page", authenticateToken, async (req, res) => {
-  const { size, page } = req.params;
-  console.log(size, page);
+router.get("/list/:size/:page/:searchKeyword", authenticateToken, async (req, res) => {
+  const { size, page, searchKeyword } = req.params;
   const intSize = parseInt(size);
   const intPage = parseInt(page);
   const offset = (intPage - 1) * intSize;
+
+  console.log(`search keyword:${searchKeyword}, size:${size}, page:${intPage}`);
+
+  // if searchKeyword is undefined, return all cases
+  let whereCaluse = {};
+  if (searchKeyword !== "undefined") {
+    whereCaluse = {
+      OR: [
+        { jid: { contains: searchKeyword } },
+        { remarks: { contains: searchKeyword } }
+      ]
+    };
+  }
 
   // Get all cases except jfull
   try {
@@ -31,6 +43,7 @@ router.get("/list/:size/:page", authenticateToken, async (req, res) => {
         createdAt: true,
         updatedAt: true,
       },
+      where: whereCaluse,
       skip: offset,
       take: intSize,
     });
@@ -86,48 +99,6 @@ router.post(
   }
 );
 
-// router.post(
-//   "/",
-//   authenticateToken,
-//   checkRole(["super-user"]),
-//   async (req, res) => {
-//     const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
-
-//     // Check if jid and jfull are provided
-//     if (!JID || !JFULL) {
-//       return res.status(400).json({
-//         message: "Missing required fields: jid and jfull must be provided.",
-//       });
-//     }
-
-//     // Replace \r\n to <br/> for line break
-//     // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
-
-//     const intJYEAR = parseInt(JYEAR);
-//     const intJNO = parseInt(JNO);
-
-//     try {
-//       const newCase = await prisma.case.create({
-//         data: {
-//           jid: JID,
-//           jyear: intJYEAR,
-//           jcase: JCASE,
-//           jno: intJNO,
-//           jdate: JDATE,
-//           jtitle: JTITLE,
-//           jfull: JFULL,
-//           remarks: REMARKS,
-//         },
-//       });
-//       res.status(201).json(newCase);
-//     } catch (error) {
-//       res
-//         .status(500)
-//         .json({ message: "Error creating case", error: error.message });
-//     }
-//   }
-// );
-
 // Get number of cases
 router.get("/count", authenticateToken, async (req, res) => {
   try {
@@ -137,6 +108,31 @@ router.get("/count", authenticateToken, async (req, res) => {
     res
       .status(500)
       .json({ message: "Error retrieving case count", error: error.message });
+  }
+});
+
+// Get number of cases by search keyword
+router.get("/count/keyword/:searchKeyword", authenticateToken, async (req, res) => {
+  const { searchKeyword } = req.params;
+  let whereCaluse = {};
+  if (searchKeyword !== "undefined") {
+    whereCaluse = {
+      OR: [
+        { jid: { contains: searchKeyword } },
+        { remarks: { contains: searchKeyword } }
+      ]
+    };
+  }
+
+  try {
+    const count = await prisma.case.count({
+      where: whereCaluse,
+    });
+    res.json({ count });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving case count by keyword", error: error.message });
   }
 });
 
