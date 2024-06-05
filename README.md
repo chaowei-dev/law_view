@@ -71,6 +71,10 @@
 
 # Postgresql
 
+- create postgresql docker:
+  - `docker run --name postgres-container -e POSTGRES_PASSWORD=pass -d -p 5432:5432 -v /home/curry/postgresql/data:/var/lib/postgresql/data postgres`
+- custom network in Docker
+  - `docker network create backend_network`
 - add .env:
   - `DATABASE_URL="postgresql://user:passowrd@localhost:5432/law_view"`
 - npx prisma generate

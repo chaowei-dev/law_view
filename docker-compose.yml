@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile.backend
     expose:
       - "3001"
+    networks:
+      - backend_network
     restart: always
 
   client:
