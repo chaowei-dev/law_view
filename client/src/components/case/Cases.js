@@ -129,10 +129,17 @@ const Cases = () => {
 
   // Highlight the keywords in the original content
   const highlightContent = (mainRegexPattern, secondRegexPattern) => {
-    if (!mainRegexPattern && !secondRegexPattern) return;
+    // 1. Check main keyword is found in the content
+    if (mainRegexPattern && !mainRegexPattern.test(currentCase.jfull)) {
+      setKeywordContent(`${mainKeywordText} NOT FOUND!`);
+      return;
+    }
 
-    // 1. Original content highlighting
+
+    // 2. Original content highlighting
     let highlightedOriginalContent = currentCase.jfull;
+
+    // 2-1. Highlight the main keyword
     if (mainRegexPattern) {
       highlightedOriginalContent = highlightedOriginalContent.replace(
         mainRegexPattern,
@@ -140,6 +147,7 @@ const Cases = () => {
       );
     }
 
+    // 2-2. Highlight the second keyword
     if (secondRegexPattern) {
       highlightedOriginalContent = highlightedOriginalContent.replace(
         secondRegexPattern,
@@ -149,24 +157,27 @@ const Cases = () => {
 
     setOriHighlightContent(highlightedOriginalContent.trim());
 
-    // 2. Trimmed content highlighting
+    // 3-1. Trimmed content with main keyword
     const startIndex = mainRegexPattern
       ? mainRegexPattern.exec(currentCase.jfull)?.index || 0
       : 0;
 
     const textAfterKeyword = currentCase.jfull.substring(startIndex);
     let highlightedKeywordContent = textAfterKeyword;
+
+    // 3-2. Highlight the main keyword
     if (mainRegexPattern) {
       highlightedKeywordContent = highlightedKeywordContent.replace(
         mainRegexPattern,
         (match) => `<mark><b>${match}</b></mark>`
       );
     }
-
+    
+    // 3-3. Highlight the second keyword
     if (secondRegexPattern) {
       highlightedKeywordContent = highlightedKeywordContent.replace(
         secondRegexPattern,
-        (match) => `<mark><b>${match}</b></mark>`
+        (match) => `<mark style="background-color: orange;"><b>${match}</b></mark>`
       );
     }
 
@@ -359,7 +370,7 @@ const Cases = () => {
           </Button>
         </Col>
         {/* Trim button */}
-        <Col xs={4} sm={2} className="d-flex justify-content-end">
+        <Col xs={4} sm={2} className="d-flex flex-column justify-content-center">
           {showTrimButton && (
             <Button
               type="button"
