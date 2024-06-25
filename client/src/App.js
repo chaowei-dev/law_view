@@ -49,7 +49,7 @@ function App() {
                     <Nav.Link as={Link} to="/cases/view/1">
                       案件檢視
                     </Nav.Link>
-                    <Nav.Link as={Link} to={"/cases/list/100/1"}>
+                    <Nav.Link as={Link} to={"/cases/list/100/1/jid=&remarks=&jfull="}>
                       案件列表
                     </Nav.Link>
 

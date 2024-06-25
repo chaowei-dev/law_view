@@ -37,7 +37,11 @@ const CaseList = () => {
   // Fetch case list
   const fetchCaseList = async () => {
     try {
-      const response = await caseService.getAllCases(pageSize, pageNum, caseKeyword);
+      const response = await caseService.getAllCases(
+        pageSize,
+        pageNum,
+        caseKeyword
+      );
       setCaseList(response.data);
     } catch (error) {
       console.error("Error fetching cases:", error);
@@ -53,7 +57,9 @@ const CaseList = () => {
   useEffect(() => {
     const fetchNumberOfPages = async () => {
       try {
-        const response = await caseService.getNumberOfCasesByKeyword(caseKeyword);
+        const response = await caseService.getNumberOfCasesByKeyword(
+          caseKeyword
+        );
         setTotalCases(response.data.count);
         setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
@@ -153,40 +159,51 @@ const CaseList = () => {
             </thead>
             <tbody>
               {caseList.map((c) => (
-                <tr key={c.id}>
-                  <th className="text-center">{serialNum++}</th>
-                  <th>
-                    <a href={`/cases/view/${c.id}`}>{c.jid}</a>
-                  </th>
-                  <th>
-                    {c.jyear}年度{c.jcase}字第{c.jno}號
-                  </th>
-                  <th>{c.jdate}</th>
-                  <th>{c.jtitle}</th>
-                  <th>{c.remarks}</th>
-                  <th>
-                    {userRole === "super-user" && (
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="secondary"
-                          size="sm"
-                          id="dropdown-basic"
-                        >
-                          Actions
-                        </Dropdown.Toggle>
+                <>
+                  <tr key={c.id}>
+                    <th rowSpan="2" className="text-center align-middle">
+                      {serialNum++}
+                    </th>
+                    <th>
+                      <a href={`/cases/view/${c.id}`}>{c.jid}</a>
+                    </th>
+                    <th>
+                      {c.jyear}年度{c.jcase}字第{c.jno}號
+                    </th>
+                    <th>{c.jdate}</th>
+                    <th>{c.jtitle}</th>
+                    <th rowSpan="2">{c.remarks}</th>
+                    <th rowSpan="2" className="align-middle">
+                      {userRole === "super-user" && (
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="secondary"
+                            size="sm"
+                            id="dropdown-basic"
+                          >
+                            Actions
+                          </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => handleEditClick(c)}>
-                            Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleDeleteClick(c)}>
-                            Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    )}
-                  </th>
-                </tr>
+                          <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => handleEditClick(c)}>
+                              Edit
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleDeleteClick(c)}>
+                              Delete
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
+                    </th>
+                  </tr>
+                  <tr>
+                    <td colSpan="4" className="text-left">
+                      <div
+                        dangerouslySetInnerHTML={{ __html: c.jfullSummary }}
+                      />
+                    </td>
+                  </tr>
+                </>
               ))}
             </tbody>
           </Table>
@@ -196,7 +213,6 @@ const CaseList = () => {
         <Col></Col>
         <Col className="d-flex justify-content-center">{paginationHtml}</Col>
         <Col className="d-flex justify-content-end">
-          
           {/* Dropdown for page limit */}
           <Form.Control
             as="select"

@@ -1,6 +1,10 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticateToken, checkRole } from "../middleware/authMiddleware.js";
+import {
+  buildDynamicKeywordClause,
+  processJfull,
+} from "../utils/processKeyword.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -8,52 +12,57 @@ const prisma = new PrismaClient();
 // Table:
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull \ remarks \ createdAt | updatedAt \ userId(FK to user table)
 
-// Get all cases except jfull (every page have i items, use page to navigate)
-router.get("/list/:size/:page/:searchKeyword", authenticateToken, async (req, res) => {
-  const { size, page, searchKeyword } = req.params;
-  const intSize = parseInt(size);
-  const intPage = parseInt(page);
-  const offset = (intPage - 1) * intSize;
+// Get all cases with summary jfull (every page have i items, use page to navigate)
+router.get(
+  "/list/:size/:page/:searchKeyword",
+  authenticateToken,
+  async (req, res) => {
+    const { size, page, searchKeyword } = req.params;
+    const intSize = parseInt(size);
+    const intPage = parseInt(page);
+    const offset = (intPage - 1) * intSize;
 
-  console.log(`search keyword:${searchKeyword}, size:${size}, page:${intPage}`);
+    // Log
+    console.log(`size:${size}, page:${intPage}`);
 
-  // if searchKeyword is undefined, return all cases
-  let whereCaluse = {};
-  if (searchKeyword !== "undefined") {
-    whereCaluse = {
-      OR: [
-        { jid: { contains: searchKeyword } },
-        { remarks: { contains: searchKeyword } }
-      ]
-    };
+    // Build where clause dynamically
+    let whereClause = buildDynamicKeywordClause(searchKeyword);
+
+    // Improved logging
+    // console.log("whereClause: ", JSON.stringify(whereClause, null, 2));
+
+    // Get all cases except jfull
+    try {
+      const cases = await prisma.case.findMany({
+        select: {
+          id: true,
+          jid: true,
+          jyear: true,
+          jcase: true,
+          jno: true,
+          jdate: true,
+          jtitle: true,
+          remarks: true,
+          createdAt: true,
+          updatedAt: true,
+          jfull: true,
+        },
+        where: whereClause,
+        skip: offset,
+        take: intSize,
+      });
+
+      // Summary jfull with every case
+      const processedCases = processJfull(cases, searchKeyword);
+
+      res.json(processedCases);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error retrieving cases", error: error.message });
+    }
   }
-
-  // Get all cases except jfull
-  try {
-    const cases = await prisma.case.findMany({
-      select: {
-        id: true,
-        jid: true,
-        jyear: true,
-        jcase: true,
-        jno: true,
-        jdate: true,
-        jtitle: true,
-        remarks: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      where: whereCaluse,
-      skip: offset,
-      take: intSize,
-    });
-    res.json(cases);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error retrieving cases", error: error.message });
-  }
-});
+);
 
 // Create a new case
 router.post(
@@ -112,29 +121,32 @@ router.get("/count", authenticateToken, async (req, res) => {
 });
 
 // Get number of cases by search keyword
-router.get("/count/keyword/:searchKeyword", authenticateToken, async (req, res) => {
-  const { searchKeyword } = req.params;
-  let whereCaluse = {};
-  if (searchKeyword !== "undefined") {
-    whereCaluse = {
-      OR: [
-        { jid: { contains: searchKeyword } },
-        { remarks: { contains: searchKeyword } }
-      ]
-    };
-  }
+router.get(
+  "/count/keyword/:searchKeyword",
+  authenticateToken,
+  async (req, res) => {
+    const { searchKeyword } = req.params;
 
-  try {
-    const count = await prisma.case.count({
-      where: whereCaluse,
-    });
-    res.json({ count });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error retrieving case count by keyword", error: error.message });
+    // Build where clause dynamically
+    let whereCaluse = buildDynamicKeywordClause(searchKeyword);
+
+    try {
+      const count = await prisma.case.count({
+        where: whereCaluse,
+      });
+
+      // Log
+      console.log(`count: ${count}`);
+
+      res.json({ count });
+    } catch (error) {
+      res.status(500).json({
+        message: "Error retrieving case count by keyword",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Get case by case id
 router.get("/case/:id", authenticateToken, async (req, res) => {
