@@ -40,7 +40,7 @@ const CaseSearch = ({ caseKeyword }) => {
         <Col xs="auto">
           <Form.Group as={Row}>
             <Form.Label column sm="2">
-              案件
+              案件:
             </Form.Label>
             <Col sm="10">
               <Form.Control
@@ -54,13 +54,14 @@ const CaseSearch = ({ caseKeyword }) => {
           </Form.Group>
           <Form.Group as={Row}>
             <Form.Label column sm="2">
-              備註
+              備註:
             </Form.Label>
             <Col sm="10">
               <Form.Control
                 className="mb-2"
                 id="remarksKeywordInput"
                 value={remarksKeyword}
+                placeholder="search non-empty remarks: !null"
                 style={{ width: "300px" }}
                 onChange={(e) => setRemarksKeyword(e.target.value)}
               />
@@ -68,7 +69,7 @@ const CaseSearch = ({ caseKeyword }) => {
           </Form.Group>
           <Form.Group as={Row}>
             <Form.Label column sm="2">
-              全文
+              全文:
             </Form.Label>
             <Col sm="10">
               <Form.Control

@@ -56,7 +56,9 @@ export const buildDynamicKeywordClause = (searchKeyword) => {
   const jfullKeyword = params.get("jfull") || "";
 
   // Log
-  console.log(`jidKeyword: ${jidKeyword} remarksKeyword: ${remarksKeyword} jfullKeyword: ${jfullKeyword}`);
+  console.log(
+    `jidKeyword:${jidKeyword}, remarksKeyword:${remarksKeyword}, jfullKeyword:${jfullKeyword}`
+  );
 
   // Build the where clause based on the keyword
   let whereClause = {};
@@ -66,8 +68,14 @@ export const buildDynamicKeywordClause = (searchKeyword) => {
 
     if (jidKeyword) whereClause.AND.push({ jid: { contains: jidKeyword } });
 
-    if (remarksKeyword)
+    // Check remarks is not empty
+    // 1. return cases with keyword
+    // 2. return cases with non-empty remarks (any character)
+    if (remarksKeyword === "!null") {
+      whereClause.AND.push({ remarks: { not: "" } });
+    } else if (remarksKeyword) {
       whereClause.AND.push({ remarks: { contains: remarksKeyword } });
+    }
 
     if (jfullKeyword)
       whereClause.AND.push({ jfull: { contains: jfullKeyword } });
