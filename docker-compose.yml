@@ -9,12 +9,12 @@ services:
     networks:
       - backend_network
     restart: always
-    command: >
-      sh -c "
-      npx prisma migrate deploy &&
-      npx prisma generate &&
-      node index.js
-      "
+    # command: >
+    #   sh -c "
+    #   npx prisma migrate deploy &&
+    #   npx prisma generate &&
+    #   node index.js
+    #   "
 
   client:
     build:
