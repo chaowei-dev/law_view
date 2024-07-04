@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
-import { ArrowLeftCircle, ArrowRightCircle } from "react-bootstrap-icons";
-import caseService from "../../services/caseService";
-import keywordService from "../../services/keywordService";
-import EditCase from "./EditCase";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
+import caseService from '../../services/caseService';
+import keywordService from '../../services/keywordService';
+import EditCase from './EditCase';
 
 const Cases = () => {
   const { id: caseId } = useParams();
@@ -12,14 +12,15 @@ const Cases = () => {
   const [caseIDs, setCaseIDs] = useState([]);
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [keywordContent, setKeywordContent] = useState("");
-  const [mainKeywordText, setMainKeywordText] = useState("原文");
-  const [secondKeywordText, setSecondKeywordText] = useState("無");
+  const [keywordContent, setKeywordContent] = useState('');
+  const [mainKeywordText, setMainKeywordText] = useState('原文');
+  const [secondKeywordText, setSecondKeywordText] = useState('無');
   const [keywordList, setKeywordList] = useState([]);
-  const [oriHighlightContent, setOriHighlightContent] = useState("");
+  const [oriHighlightContent, setOriHighlightContent] = useState('');
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
-  const [currentCaseRemarks, setCurrentCaseRemarks] = useState("");
+  const [currentCaseRemarks, setCurrentCaseRemarks] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Fetch all keywords
   useEffect(() => {
@@ -30,7 +31,7 @@ const Cases = () => {
         // setMainKeywordText(response.data[0]?.keyword || "");
       })
       .catch((error) => {
-        console.error("Error fetching keywords:", error);
+        console.error('Error fetching keywords:', error);
       });
   }, []);
 
@@ -46,7 +47,7 @@ const Cases = () => {
         if (index !== -1) setCurrentIndex(index);
       })
       .catch((error) => {
-        console.error("Error fetching case IDs:", error);
+        console.error('Error fetching case IDs:', error);
       });
   }, [caseId]);
 
@@ -59,11 +60,11 @@ const Cases = () => {
           setCurrentCase(response.data);
           setOriHighlightContent(response.data.jfull);
           setCurrentCaseRemarks(response.data.remarks);
-          console.log("Current case:", response.data);
-          console.log("Current remarks:", response.data.remarks);
+          console.log('Current case:', response.data);
+          console.log('Current remarks:', response.data.remarks);
         })
         .catch((error) => {
-          console.error("Error fetching case:", error);
+          console.error('Error fetching case:', error);
         });
     }
   };
@@ -86,7 +87,7 @@ const Cases = () => {
       let secondRegexPattern;
 
       // If the keyword is "原文", display the full content
-      if (mainKeywordText === "原文") {
+      if (mainKeywordText === '原文') {
         setKeywordContent(currentCase.jfull);
         setShowTrimmedContent(false);
         setShowTrimButton(false);
@@ -102,12 +103,12 @@ const Cases = () => {
 
       mainRegexPattern =
         mainKeywordObj && mainKeywordObj.pattern
-          ? new RegExp(mainKeywordObj.pattern, "gi")
-          : new RegExp(mainKeywordText, "gi");
+          ? new RegExp(mainKeywordObj.pattern, 'gi')
+          : new RegExp(mainKeywordText, 'gi');
 
       // If second keyword is "無"
       // Highlight the main keyword only
-      if (secondKeywordText === "無") {
+      if (secondKeywordText === '無') {
         highlightContent(mainRegexPattern, null);
         return;
       }
@@ -119,8 +120,8 @@ const Cases = () => {
 
       secondRegexPattern =
         secondKeywordObj && secondKeywordObj.pattern
-          ? new RegExp(secondKeywordObj.pattern, "gi")
-          : new RegExp(secondKeywordText, "gi");
+          ? new RegExp(secondKeywordObj.pattern, 'gi')
+          : new RegExp(secondKeywordText, 'gi');
 
       // Highlight the keywords
       highlightContent(mainRegexPattern, secondRegexPattern);
@@ -134,7 +135,6 @@ const Cases = () => {
       setKeywordContent(`${mainKeywordText} NOT FOUND!`);
       return;
     }
-
 
     // 2. Original content highlighting
     let highlightedOriginalContent = currentCase.jfull;
@@ -172,12 +172,13 @@ const Cases = () => {
         (match) => `<mark><b>${match}</b></mark>`
       );
     }
-    
+
     // 3-3. Highlight the second keyword
     if (secondRegexPattern) {
       highlightedKeywordContent = highlightedKeywordContent.replace(
         secondRegexPattern,
-        (match) => `<mark style="background-color: orange;"><b>${match}</b></mark>`
+        (match) =>
+          `<mark style="background-color: orange;"><b>${match}</b></mark>`
       );
     }
 
@@ -205,7 +206,7 @@ const Cases = () => {
       REMARKS: currentCaseRemarks,
     };
 
-    console.log("Updated case:", updatedCase);
+    console.log('Updated case:', updatedCase);
 
     try {
       // Update the remarks in the database
@@ -213,7 +214,7 @@ const Cases = () => {
         currentCase.id,
         updatedCase
       );
-      console.log("Remarks updated:", response.data);
+      console.log('Remarks updated:', response.data);
 
       // Update the local state to reflect the new remarks
       setCurrentCase((prevState) => ({
@@ -221,7 +222,7 @@ const Cases = () => {
         remarks: currentCaseRemarks,
       }));
     } catch (error) {
-      console.error("Error updating remarks:", error);
+      console.error('Error updating remarks:', error);
     }
   };
 
@@ -241,6 +242,16 @@ const Cases = () => {
     if (!isNaN(newIndex) && newIndex >= 0 && newIndex < caseIDs.length) {
       navigate(`/cases/view/${caseIDs[newIndex].id}`);
     }
+  };
+
+  const handleCopyContent = () => {
+    navigator.clipboard.writeText(oriHighlightContent);
+
+    // Show success message for 2 seconds
+    setCopySuccess(true);
+    setTimeout(() => {
+      setCopySuccess(false);
+    }, 2000);      
   };
 
   // Render loading state or case content
@@ -302,7 +313,7 @@ const Cases = () => {
           <div className="d-flex align-items-center">
             <p className="mb-0 me-2">主要關鍵字:</p>
             <select
-              style={{ maxWidth: "300px" }}
+              style={{ maxWidth: '300px' }}
               className="form-select"
               aria-label="Default select example"
               value={mainKeywordText}
@@ -320,7 +331,7 @@ const Cases = () => {
           <div className="d-flex align-items-center mt-2">
             <p className="mb-0 me-2">次要關鍵字:</p>
             <select
-              style={{ maxWidth: "300px" }}
+              style={{ maxWidth: '300px' }}
               className="form-select"
               aria-label="Default select example"
               value={secondKeywordText}
@@ -355,7 +366,7 @@ const Cases = () => {
             type="number"
             value={currentIndex + 1}
             onChange={handleInput}
-            style={{ width: "80px" }}
+            style={{ width: '80px' }}
             min="1"
             max={caseIDs.length}
             className="me-2 ms-2"
@@ -370,18 +381,22 @@ const Cases = () => {
           </Button>
         </Col>
         {/* Trim button */}
-        <Col xs={4} sm={2} className="d-flex flex-column justify-content-center">
+        <Col
+          xs={4}
+          sm={2}
+          className="d-flex flex-column justify-content-center"
+        >
           {showTrimButton && (
             <Button
               type="button"
               className={
                 showTrimmedContent
-                  ? "btn btn-primary ms-auto"
-                  : "btn btn-secondary ms-auto"
+                  ? 'btn btn-primary ms-auto'
+                  : 'btn btn-secondary ms-auto'
               }
               onClick={() => setShowTrimmedContent(!showTrimmedContent)}
             >
-              {showTrimmedContent ? "裁切" : "全文"}
+              {showTrimmedContent ? '裁切' : '全文'}
             </Button>
           )}
         </Col>
@@ -389,20 +404,29 @@ const Cases = () => {
       <Row>
         {/* Content */}
         <Col>
-          <div
-            style={{
-              padding: "10px",
-              border: "1px solid #dee2e6",
-              maxHeight: "700px",
-              overflowY: "auto",
-              whiteSpace: "pre-wrap",
-            }}
-            dangerouslySetInnerHTML={{
-              __html: showTrimmedContent
-                ? oriHighlightContent
-                : keywordContent || "No Content Available",
-            }}
-          ></div>
+          <div style={{ position: 'relative' }}>
+            <Button
+              variant="outline-secondary"
+              style={{ position: 'absolute', top: '10px', right: '20px' }}
+              onClick={handleCopyContent}
+            >
+              {copySuccess ? 'Copied!' : 'Copy'}
+            </Button>
+            <div
+              style={{
+                padding: '10px',
+                border: '1px solid #dee2e6',
+                maxHeight: '700px',
+                overflowY: 'auto',
+                whiteSpace: 'pre-wrap',
+              }}
+              dangerouslySetInnerHTML={{
+                __html: showTrimmedContent
+                  ? oriHighlightContent
+                  : keywordContent || 'No Content Available',
+              }}
+            ></div>
+          </div>
         </Col>
       </Row>
     </Container>
