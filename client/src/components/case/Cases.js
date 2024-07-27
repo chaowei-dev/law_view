@@ -244,14 +244,32 @@ const Cases = () => {
     }
   };
 
+  // Handle copy button
+  const copyToClipboard = (text) => {
+    // Clipboard API is not supported, use fallback method
+    let textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      let successful = document.execCommand('copy');
+      let msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
   const handleCopyContent = () => {
-    navigator.clipboard.writeText(oriHighlightContent);
+    // use non-https clipboard API
+    copyToClipboard(oriHighlightContent);
 
     // Show success message for 2 seconds
     setCopySuccess(true);
     setTimeout(() => {
       setCopySuccess(false);
-    }, 2000);      
+    }, 2000);
   };
 
   // Render loading state or case content
@@ -405,6 +423,7 @@ const Cases = () => {
         {/* Content */}
         <Col>
           <div style={{ position: 'relative' }}>
+            {/* Copy button */}
             <Button
               variant="outline-secondary"
               style={{ position: 'absolute', top: '10px', right: '20px' }}
