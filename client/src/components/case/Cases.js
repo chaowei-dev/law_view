@@ -4,7 +4,7 @@ import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
 import caseService from '../../services/caseService';
 import keywordService from '../../services/keywordService';
-import EditCase from './EditCase';
+import ClaimAmount from './ClaimAmount';
 
 const Cases = () => {
   const { id: caseId } = useParams();
@@ -327,7 +327,7 @@ const Cases = () => {
       </Row>
       <Row className="mb-3">
         {/* Keyword selection */}
-        <Col xs={12} sm={6} className="mb-3">
+        <Col className="mb-3">
           <div className="d-flex align-items-center">
             <p className="mb-0 me-2">主要關鍵字:</p>
             <select
@@ -414,8 +414,14 @@ const Cases = () => {
         </Col>
       </Row>
       <Row>
+        {/* Extraction */}
+        <Col sm={4}>
+          <ClaimAmount 
+            content={currentCase.jfull}
+          />
+        </Col>
         {/* Content */}
-        <Col>
+        <Col sm={8}>
           <div style={{ position: 'relative' }}>
             {/* Trim button */}
             {showTrimButton && (
