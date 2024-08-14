@@ -398,39 +398,38 @@ const Cases = () => {
             <ArrowRightCircle size={24} />
           </Button>
         </Col>
-        {/* Trim button */}
+        {/* Copy button */}
         <Col
           xs={4}
           sm={2}
           className="d-flex flex-column justify-content-center"
         >
-          {showTrimButton && (
-            <Button
-              type="button"
-              className={
-                showTrimmedContent
-                  ? 'btn btn-primary ms-auto'
-                  : 'btn btn-secondary ms-auto'
-              }
-              onClick={() => setShowTrimmedContent(!showTrimmedContent)}
-            >
-              {showTrimmedContent ? '裁切' : '全文'}
-            </Button>
-          )}
+          <Button
+            variant="outline-secondary"
+            onClick={handleCopyContent}
+            style={{ position: 'absolute', right: '20px' }}
+          >
+            {copySuccess ? 'Copied!' : 'Copy'}
+          </Button>
         </Col>
       </Row>
       <Row>
         {/* Content */}
         <Col>
           <div style={{ position: 'relative' }}>
-            {/* Copy button */}
-            <Button
-              variant="outline-secondary"
-              style={{ position: 'absolute', top: '10px', right: '20px' }}
-              onClick={handleCopyContent}
-            >
-              {copySuccess ? 'Copied!' : 'Copy'}
-            </Button>
+            {/* Trim button */}
+            {showTrimButton && (
+              <Button
+                type="button"
+                variant={
+                  showTrimmedContent ? 'primary ms-auto' : 'secondary ms-auto'
+                }
+                style={{ position: 'absolute', top: '10px', right: '20px' }}
+                onClick={() => setShowTrimmedContent(!showTrimmedContent)}
+              >
+                {showTrimmedContent ? '裁切' : '全文'}
+              </Button>
+            )}
             <div
               style={{
                 padding: '10px',

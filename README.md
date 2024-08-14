@@ -14,6 +14,10 @@
   - View
     - Naviagte
 
+# .env
+- /backend
+  - `DATABASE_URL="postgresql://user:passowrd@localhost:5432/law_view"`
+
 # Backend
 
 - prisma
