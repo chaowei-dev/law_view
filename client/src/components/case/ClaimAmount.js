@@ -9,25 +9,30 @@ const ClaimAmount = ({ content }) => {
     // Remove "," from the string
     s = s.replace(/,/g, '');
 
-    // Use regex to find all numbers in the string
-    const matches = [...s.matchAll(/\d+/g)];
+    // Use regex to find all numbers or "萬" in the string
+    // Ex: 被告應給付原告110萬元 => ["110萬"]
+    const matches = [...s.matchAll(/\d+萬|\d+/g)];
 
     // Return the last match
     if (matches.length > 0) {
       // Get the last match
-      const lastMatch = matches[matches.length - 1];
+      const lastMatch = matches[matches.length - 1][0];
 
-      // add "," to the number
-      const number = lastMatch[0];
-      const numberLength = number.length;
-      const numberParts = [];
-      for (let i = 0; i < numberLength; i += 3) {
-        numberParts.push(number.slice(i, i + 3));
-      }
-      lastMatch[0] = numberParts.join(',');
+      // Add "," to the number
+      // Ex: 110萬 => 110萬
+      // Ex: 1110萬 => 1,110萬
+      // Ex: 1110 => 1,110
+      const formattedNumber = lastMatch
+        .replace(/萬$/, '')
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-      // Return the last match
-      return lastMatch[0];
+      // If the original match ended with "萬", add it back
+      const result = lastMatch.endsWith('萬')
+        ? formattedNumber + '萬'
+        : formattedNumber;
+
+      // Return the formatted last match
+      return result;
     } else {
       return '';
     }

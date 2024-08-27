@@ -1,3 +1,6 @@
+# TO-DO
+[ ] Fix show fully chn_money text 
+
 # Function
 
 - **Auth**
