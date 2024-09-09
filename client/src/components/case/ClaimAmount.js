@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Table } from 'react-bootstrap';
 
 const ClaimAmount = ({ content }) => {
-  const [extractedContent, setExtractedContent] = useState('');
+  const [claimAmount, setClaimAmount] = useState('');
 
   // Find the last match of a number in a string
   const findLastMatch = (s) => {
@@ -62,20 +62,37 @@ const ClaimAmount = ({ content }) => {
     return amount;
   };
 
-  useEffect(() => {
+  // Get the extracted content with loading page
+  const getExtractedContent = (content) => {
     const amount = extractClaimAmount(content);
-    setExtractedContent(amount);
+    setClaimAmount(amount);
+  };
+  useEffect(() => {
+    getExtractedContent(content);
   }, [content]);
 
   return (
     <div>
-      <Card>
-        <Card.Body>
-          <Card.Text>
-            {extractedContent ? `原告請求: ${extractedContent}元` : 'No found'}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+      <Table striped="columns">
+        <tbody>
+          <tr>
+            <th>慰撫金</th>
+            <td>x</td>
+          </tr>
+          <tr>
+            <th>原告請求</th>
+            <td>{claimAmount ? `${claimAmount}` : 'No found'}</td>
+          </tr>
+          <tr>
+            <th>傷害</th>
+            <td>x</td>
+          </tr>
+          <tr>
+            <th>勞動力減損</th>
+            <td>x</td>
+          </tr>
+        </tbody>
+      </Table>
     </div>
   );
 };
