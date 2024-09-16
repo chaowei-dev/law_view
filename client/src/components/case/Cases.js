@@ -4,7 +4,7 @@ import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
 import caseService from '../../services/caseService';
 import keywordService from '../../services/keywordService';
-import ClaimAmount from './ClaimAmount';
+import DataExtract from './DataExtract';
 
 const Cases = () => {
   const { id: caseId } = useParams();
@@ -21,6 +21,7 @@ const Cases = () => {
   const [showTrimButton, setShowTrimButton] = useState(true);
   const [currentCaseRemarks, setCurrentCaseRemarks] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [dataExtraction, setDataExtraction] = useState({});
 
   // Fetch all keywords
   useEffect(() => {
@@ -57,10 +58,19 @@ const Cases = () => {
       caseService
         .getCaseById(caseIDs[currentIndex].id)
         .then((response) => {
+          // Get case
           setCurrentCase(response.data);
-          setOriHighlightContent(response.data.jfull);
-          setCurrentCaseRemarks(response.data.remarks);
           console.log('Current case:', response.data);
+
+          // Set data extraction
+          setDataExtraction(response.data.dataExtraction);
+          console.log('Data extraction:', response.data.dataExtraction);
+
+          // Set original content
+          setOriHighlightContent(response.data.jfull);
+
+          // Get/Set remarks
+          setCurrentCaseRemarks(response.data.remarks);
           console.log('Current remarks:', response.data.remarks);
         })
         .catch((error) => {
@@ -196,13 +206,7 @@ const Cases = () => {
   // Handler for saving remarks
   const handleRemarksSave = async () => {
     const updatedCase = {
-      ID: currentCase.id,
-      JID: currentCase.jid,
-      JYEAR: currentCase.jyear,
-      JCASE: currentCase.jcase,
-      JNO: currentCase.jno,
-      JDATE: currentCase.jdate,
-      JTITLE: currentCase.jtitle,
+      ...currentCase,
       REMARKS: currentCaseRemarks,
     };
 
@@ -416,9 +420,7 @@ const Cases = () => {
       <Row>
         {/* Extraction */}
         <Col sm={4}>
-          <ClaimAmount 
-            content={currentCase.jfull}
-          />
+          <DataExtract dataExtraction={dataExtraction} />
         </Col>
         {/* Content */}
         <Col sm={8}>

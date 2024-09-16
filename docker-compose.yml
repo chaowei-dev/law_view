@@ -32,6 +32,15 @@ services:
     networks:
       - app-network
 
+  flask_api:
+    build:
+      context: ../NTPU_carcrash
+      dockerfile: Dockerfile.flask
+    networks:
+      - app-network
+    environment:
+      - FLASK_PORT=3005
+
 networks:
   app-network:
     driver: bridge
