@@ -40,6 +40,8 @@ services:
       - app-network
     environment:
       - FLASK_PORT=3005
+    ports:
+      - "3005:3005"
 
 networks:
   app-network:
