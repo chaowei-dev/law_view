@@ -89,8 +89,19 @@ router.post(
     const intJYEAR = parseInt(jyear);
     const intJNO = parseInt(jno);
 
-    // Create to database
     try {
+      // Check if a case with the given jid already exists
+      const existingCase = await prisma.case.findUnique({
+        where: { jid: jid },
+      });
+
+      if (existingCase) {
+        return res
+          .status(409)
+          .json({ message: 'A case with this jid already exists.' });
+      }
+
+      // If jid doesn't exist, create the new case
       const newCase = await prisma.case.create({
         data: {
           jid,
@@ -108,11 +119,10 @@ router.post(
     } catch (error) {
       res
         .status(500)
-        .json({ message: 'Error creating case', error: error.message });
+        .json({ message: 'Error processing case', error: error.message });
     }
   }
 );
-
 // Get number of cases
 router.get('/count', authenticateToken, async (req, res) => {
   try {
@@ -330,8 +340,8 @@ router.post(
             let updatedCount = 0;
             let skippedCount = 0;
 
-            console.log("Marking cases...");
-            
+            console.log('Marking cases...');
+
             for (let row of results) {
               const updatedCase = await prisma.case.updateMany({
                 where: { jid: row.jid },
