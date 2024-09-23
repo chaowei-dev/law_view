@@ -1,35 +1,40 @@
-import "./App.css";
-import React, { useEffect } from "react";
+import './App.css';
 
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
-import { VscLaw } from "react-icons/vsc";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from 'react-router-dom';
+import { VscLaw } from 'react-icons/vsc';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
-import authService from "./services/authService";
-import PrivateRoute from "./components/permission/PrivateRoute";
-import SuperRoute from "./components/permission/SuperRoute";
-import Users from "./components/auth/Users";
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import authService from './services/authService';
+import PrivateRoute from './components/permission/PrivateRoute';
+import Users from './components/auth/Users';
 // import AlertBox from "./components/box/AlertBox";
-import Cases from "./components/case/Cases";
-import CaseList from "./components/case/CaseList";
-import AddCase from "./components/case/AddCase";
-import KeywordView from "./components/keyword/KeywordView";
+import Cases from './components/case/Cases';
+import CaseList from './components/case/CaseList';
+import AddCase from './components/case/AddCase';
+import KeywordView from './components/keyword/KeywordView';
 
 function App() {
   const userRole = authService.getUserRole();
   const userName = authService.getUserName();
+  const isLogin = !authService.isTokenExpired();
   // const [messageBox, setMessageBox] = useState("");
   // const [errorBox, setErrorBox] = useState("");
 
   // Auto logout when token is expired
   // Check every 5 minutes
-  useEffect(() => {
-    const intervalId = setInterval(authService.checkTokenExpiration, 60000);
-    return () => clearInterval(intervalId);
-  }, []);
+  // useEffect(() => {
+  //   const intervalId = setInterval(authService.checkTokenExpiration, 60000);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   return (
     <Router>
@@ -44,20 +49,22 @@ function App() {
             <Nav className="me-auto">
               {/* Nav Link */}
               <>
-                {userRole && (
+                {isLogin && userRole && (
                   <>
                     <Nav.Link as={Link} to="/cases/view/1">
                       案件檢視
                     </Nav.Link>
-                    <Nav.Link as={Link} to={"/cases/list/100/1/jid=&remarks=&jfull="}>
+                    <Nav.Link
+                      as={Link}
+                      to={'/cases/list/100/1/jid=&remarks=&jfull='}
+                    >
                       案件列表
                     </Nav.Link>
-
                   </>
                 )}
               </>
               {/* Nav Link with super-user */}
-              {userRole === "super-user" && (
+              {isLogin && userRole === 'super-user' && (
                 <>
                   <Nav.Link as={Link} to="/cases/add">
                     新增案件
@@ -79,7 +86,7 @@ function App() {
 
             {/* Auth Status */}
             <Nav>
-              {userRole ? (
+              {isLogin && userRole ? (
                 <>
                   <Navbar.Text className="fw-bold text-primary mr-3">
                     使用者: {userName}
@@ -115,31 +122,31 @@ function App() {
         <Route
           path="/register"
           element={
-            <SuperRoute>
+            <PrivateRoute allowedUser={['super-user']}>
               <Register />
-            </SuperRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/user/edit"
           element={
-            <SuperRoute>
+            <PrivateRoute allowedUser={['super-user']}>
               <Users />
-            </SuperRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/cases/add"
           element={
-            <SuperRoute>
+            <PrivateRoute allowedUser={['super-user']}>
               <AddCase />
-            </SuperRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/keyword"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedUser={['super-user']}>
               <KeywordView />
             </PrivateRoute>
           }
@@ -148,7 +155,7 @@ function App() {
         <Route
           path="/cases/view/:id"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedUser={['super-user', 'user']}>
               <Cases />
             </PrivateRoute>
           }
@@ -156,7 +163,7 @@ function App() {
         <Route
           path="/cases/list/:pageSize/:pageNum/:caseKeyword?"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedUser={['super-user', 'user']}>
               <CaseList />
             </PrivateRoute>
           }

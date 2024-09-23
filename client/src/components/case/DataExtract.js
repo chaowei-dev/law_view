@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table } from 'react-bootstrap';
+import {  Table } from 'react-bootstrap';
 
 const DataExtract = ({ dataExtraction }) => {
   const [dataExtractionDict, setDataExtractionDict] = useState({

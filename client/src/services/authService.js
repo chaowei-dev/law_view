@@ -103,28 +103,41 @@ const getUserId = () => {
   return userId;
 };
 
-const checkTokenExpiration = () => {
+// const checkTokenExpiration = () => {
+//   const token = getToken();
+
+//   console.log(`Checking token expiration... (${token.exp})`);
+
+//   // Check if token is expired
+//   if (token.exp * 1000 < new Date().getTime()) {
+//     logout();
+//     console.log("Token is expired, logging out...!");
+//   }
+// };
+
+const isTokenExpired = () => {
   const token = getToken();
 
-  console.log(`Checking token expiration... (${token.exp})`);
+  if (!token) return true;
 
-  // Check if token is expired
-  if (token.exp * 1000 < new Date().getTime()) {
-    logout();
-    console.log("Token is expired, logging out...!");
-  }
+  const isExpired = token.exp * 1000 < new Date().getTime();
+
+  return isExpired;
 };
 
-export default {
+const authService = {
   register,
   login,
   logout,
   deleteUser,
   updateUser,
   changePassword,
-  checkTokenExpiration,
+  // checkTokenExpiration,
   getUserList,
   getUserRole,
   getUserName,
   getUserId,
+  isTokenExpired,
 };
+
+export default authService;
