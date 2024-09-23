@@ -6,9 +6,13 @@ import {
   processJfull,
 } from '../utils/processKeyword.js';
 import axios from 'axios';
+import fs from 'fs';
+import csv from 'csv-parser';
+import multer from 'multer';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+// const upload = multer({ dest: 'uploads/' });
 
 // Table:
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull \ remarks \ createdAt | updatedAt \ userId(FK to user table)
@@ -213,6 +217,7 @@ router.get('/all-id', authenticateToken, async (req, res) => {
   try {
     const caseIds = await prisma.case.findMany({
       select: { id: true },
+      where: { is_hide: false },
     });
     res.json(caseIds);
   } catch (error) {
@@ -277,6 +282,81 @@ router.delete(
         .status(500)
         .json({ message: 'Error deleting case', error: error.message });
     }
+  }
+);
+
+// Handle .csv file name
+// Configure multer
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    // Accept csv files only
+    if (!file.originalname.match(/\.(csv)$/)) {
+      return cb(new Error('Only CSV files are allowed!'), false);
+    }
+    cb(null, true);
+  },
+}).single('file');
+
+// Mark is_hide to false
+// Send a .csv file to backend to update is_hide to false
+// .csv file have multiple case title
+router.post(
+  '/mark-case',
+  authenticateToken,
+  checkRole(['super-user']),
+  async (req, res) => {
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return res.status(400).send(`Multer upload error: ${err.message}`);
+      } else if (err) {
+        // An unknown error occurred when uploading.
+        return res.status(500).send(`Unknown upload error: ${err.message}`);
+      }
+
+      // Everything went fine.
+      if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+      }
+
+      const results = [];
+
+      fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          try {
+            let updatedCount = 0;
+            let skippedCount = 0;
+
+            console.log("Marking cases...");
+            
+            for (let row of results) {
+              const updatedCase = await prisma.case.updateMany({
+                where: { jid: row.jid },
+                data: { is_hide: false },
+              });
+
+              if (updatedCase.count > 0) {
+                updatedCount += updatedCase.count;
+              } else {
+                skippedCount++;
+              }
+            }
+
+            // Delete the uploaded file
+            fs.unlinkSync(req.file.path);
+
+            res.json({
+              message: `${updatedCount} cases updated successfully. ${skippedCount} cases skipped (not found in database).`,
+            });
+          } catch (err) {
+            console.error('Error processing CSV:', err);
+            res.status(500).send(`Error processing CSV file: ${err.message}`);
+          }
+        });
+    });
   }
 );
 

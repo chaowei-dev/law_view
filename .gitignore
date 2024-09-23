@@ -135,3 +135,5 @@ dist
 #　prisma
 # *.sqlite3
 backend/prisma/dev.sqlite3-journal
+
+uploads/

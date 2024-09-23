@@ -38,6 +38,7 @@ model Case {
   remarks   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  is_hide   Boolean  @default(true)
   // Foreign key to associate each case with a user
   userId    Int
   user      User     @relation(fields: [userId], references: [id]) // Relates each case to a user

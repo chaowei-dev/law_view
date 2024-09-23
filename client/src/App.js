@@ -21,6 +21,7 @@ import Cases from './components/case/Cases';
 import CaseList from './components/case/CaseList';
 import AddCase from './components/case/AddCase';
 import KeywordView from './components/keyword/KeywordView';
+import MarkCase from './components/case/MarkCase';
 
 function App() {
   const userRole = authService.getUserRole();
@@ -68,6 +69,9 @@ function App() {
                 <>
                   <Nav.Link as={Link} to="/cases/add">
                     新增案件
+                  </Nav.Link>
+                  <Nav.Link as={Link} to="/cases/mark">
+                    標記案件
                   </Nav.Link>
                   <Nav.Link as={Link} to="/keyword">
                     關鍵字
@@ -148,6 +152,14 @@ function App() {
           element={
             <PrivateRoute allowedUser={['super-user']}>
               <KeywordView />
+            </PrivateRoute>
+          }
+        />
+        <Route 
+         path="/cases/mark"
+          element={
+            <PrivateRoute allowedUser={['super-user']}>
+              <MarkCase />
             </PrivateRoute>
           }
         />
