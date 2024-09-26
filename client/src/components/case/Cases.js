@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
@@ -26,61 +26,53 @@ const Cases = () => {
 
   // Fetch all keywords
   useEffect(() => {
-    keywordService
-      .getKeywords()
-      .then((response) => {
+    const fetchKeywords = async () => {
+      try {
+        const response = await keywordService.getKeywords();
         setKeywordList(response.data);
-        // setMainKeywordText(response.data[0]?.keyword || "");
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching keywords:', error);
-      });
+      }
+    };
+    fetchKeywords();
   }, []);
 
   // Fetch all case IDs and determine the current index
   useEffect(() => {
-    caseService
-      .getAllCaseIDs()
-      .then((response) => {
+    const fetchCaseIDs = async () => {
+      try {
+        const response = await caseService.getAllCaseIDs();
         setCaseIDs(response.data);
         const index = response.data.findIndex(
           (caseItem) => caseItem.id.toString() === caseId
         );
         if (index !== -1) setCurrentIndex(index);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching case IDs:', error);
-      });
+      }
+    };
+    fetchCaseIDs();
   }, [caseId]);
 
   // Fetch case content by index
-  const fetchContent = () => {
+  const fetchContent = useCallback(async () => {
     if (caseIDs.length > 0 && caseIDs[currentIndex]) {
-      caseService
-        .getCaseById(caseIDs[currentIndex].id)
-        .then((response) => {
-          // Get case
-          setCurrentCase(response.data);
-          console.log('Current case:', response.data);
-
-          // Set data extraction
-          setDataExtraction(response.data.dataExtraction);
-          console.log('Data extraction:', response.data.dataExtraction);
-
-          // Set original content
-          setOriHighlightContent(response.data.jfull);
-
-          console.log('Current remarks:', response.data.remarks);
-        })
-        .catch((error) => {
-          console.error('Error fetching case:', error);
-        });
+      try {
+        const response = await caseService.getCaseById(
+          caseIDs[currentIndex].id
+        );
+        setCurrentCase(response.data);
+        setDataExtraction(response.data.dataExtraction);
+        setOriHighlightContent(response.data.jfull);
+      } catch (error) {
+        console.error('Error fetching case:', error);
+      }
     }
-  };
+  }, [currentIndex, caseIDs]);
 
   useEffect(() => {
     fetchContent();
-  }, [currentIndex, caseIDs]);
+  }, [fetchContent]);
 
   // Update keyword content when current case or keyword text changes
   useEffect(() => {
@@ -327,6 +319,7 @@ const Cases = () => {
               aria-label="Default select example"
               value={secondKeywordText}
               onChange={handleSecondKeywordChange}
+              disabled={mainKeywordText === "原文"}
             >
               <option>無</option>
               {keywordList.map(
