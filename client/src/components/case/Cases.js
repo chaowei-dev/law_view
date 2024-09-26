@@ -5,6 +5,7 @@ import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
 import caseService from '../../services/caseService';
 import keywordService from '../../services/keywordService';
 import DataExtract from './DataExtract';
+import EditCase from './EditCase';
 
 const Cases = () => {
   const { id: caseId } = useParams();
@@ -19,9 +20,9 @@ const Cases = () => {
   const [oriHighlightContent, setOriHighlightContent] = useState('');
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
-  const [currentCaseRemarks, setCurrentCaseRemarks] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [dataExtraction, setDataExtraction] = useState({});
+  const [editingWindowShow, setEditingWindowShow] = useState(false);
 
   // Fetch all keywords
   useEffect(() => {
@@ -69,8 +70,6 @@ const Cases = () => {
           // Set original content
           setOriHighlightContent(response.data.jfull);
 
-          // Get/Set remarks
-          setCurrentCaseRemarks(response.data.remarks);
           console.log('Current remarks:', response.data.remarks);
         })
         .catch((error) => {
@@ -82,13 +81,6 @@ const Cases = () => {
   useEffect(() => {
     fetchContent();
   }, [currentIndex, caseIDs]);
-
-  // Reset currentCaseRemarks when the currentCase changes
-  useEffect(() => {
-    if (currentCase && currentCase.remarks !== undefined) {
-      setCurrentCaseRemarks(currentCase.remarks);
-    }
-  }, [currentCase]);
 
   // Update keyword content when current case or keyword text changes
   useEffect(() => {
@@ -203,33 +195,6 @@ const Cases = () => {
     setSecondKeywordText(e.target.value);
   };
 
-  // Handler for saving remarks
-  const handleRemarksSave = async () => {
-    const updatedCase = {
-      ...currentCase,
-      REMARKS: currentCaseRemarks,
-    };
-
-    console.log('Updated case:', updatedCase);
-
-    try {
-      // Update the remarks in the database
-      const response = await caseService.updateCase(
-        currentCase.id,
-        updatedCase
-      );
-      console.log('Remarks updated:', response.data);
-
-      // Update the local state to reflect the new remarks
-      setCurrentCase((prevState) => ({
-        ...prevState,
-        remarks: currentCaseRemarks,
-      }));
-    } catch (error) {
-      console.error('Error updating remarks:', error);
-    }
-  };
-
   // Navigation handlers
   const handlePrevCase = () => {
     if (currentIndex > 0)
@@ -246,6 +211,12 @@ const Cases = () => {
     if (!isNaN(newIndex) && newIndex >= 0 && newIndex < caseIDs.length) {
       navigate(`/cases/view/${caseIDs[newIndex].id}`);
     }
+  };
+
+  // EDITING
+  const handleEditClick = (c) => {
+    setCurrentCase(c);
+    setEditingWindowShow(true);
   };
 
   // Handle copy button
@@ -306,27 +277,25 @@ const Cases = () => {
             </Card.Body>
           </Card>
         </Col>
-        {/* Remarks input */}
+        {/* Remarks card */}
         <Col>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={currentCaseRemarks}
-              onChange={(e) => setCurrentCaseRemarks(e.target.value)}
-              placeholder="Enter Remarks"
-            />
-          </Form.Group>
+          <Card>
+            <Card.Body>
+              <Card.Title>備註:</Card.Title>
+              <Card.Text>{currentCase.remarks}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* EDIT button */}
+        <Col>
           <div className="d-flex justify-content-end mt-1">
-            <Button variant="outline-dark" onClick={() => handleRemarksSave()}>
-              Save Remarks
+            <Button
+              variant="outline-dark"
+              onClick={() => handleEditClick(currentCase)}
+            >
+              Edit
             </Button>
           </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <h4>判決書內文:</h4>
         </Col>
       </Row>
       <Row className="mb-3">
@@ -409,7 +378,7 @@ const Cases = () => {
           className="d-flex flex-column justify-content-center"
         >
           <Button
-            variant="outline-secondary"
+            variant="outline-primary"
             onClick={handleCopyContent}
             style={{ position: 'absolute', right: '20px' }}
           >
@@ -455,6 +424,15 @@ const Cases = () => {
           </div>
         </Col>
       </Row>
+      {/* Editing modal */}
+      {editingWindowShow && (
+        <EditCase
+          show={editingWindowShow}
+          onHide={() => setEditingWindowShow(false)}
+          lawCase={currentCase}
+          onSave={fetchContent} // Passing fetchCaseList as onSave to refresh the list
+        />
+      )}
     </Container>
   );
 };
