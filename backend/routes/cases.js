@@ -188,7 +188,7 @@ router.get('/case/:isLabel/:id', authenticateToken, async (req, res) => {
       // Get data extraction from http://localhost:3005/api/extract
       try {
         // const response = await axios.post('http://localhost:3005/api/extract', {
-        const response = await axios.post('http://localhost:3005/api/extract', {
+        const response = await axios.post('http://flask_api:3005/api/extract', {
           text: jfull,
         });
         dataExtraction = response.data;
