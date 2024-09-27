@@ -164,8 +164,12 @@ router.get(
 );
 
 // Get case by case id
-router.get('/case/:id', authenticateToken, async (req, res) => {
+router.get('/case/:isLabel/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
+  const { isLabel } = req.params;
+
+  console.log(`isLabel: ${isLabel}`);
+
   try {
     // Get case data by id
     let caseData = await prisma.case.findUnique({
@@ -179,36 +183,39 @@ router.get('/case/:id', authenticateToken, async (req, res) => {
     // replace " ", "\n", "\t", "\r", "　", "\\r\\n"
     jfull = jfull.replace(/[\s\n\t\r　]/g, '');
 
-    // Get data extraction from http://localhost:3005/api/extract
-    try {
-      // const response = await axios.post('http://localhost:3005/api/extract', {
-      const response = await axios.post('http://flask_api:3005/api/extract', {
-        text: jfull,
-      });
-      dataExtraction = response.data;
-    } catch (error) {
-      dataExtraction = `Error extracting data: ${error.message}`;
-    }
-
-    // If any dataExtraction' value is not found, set it to empty string
-    const dataExtractionKeys = [
-      'compensation_amount',
-      'injured_part',
-      'labor_ability_reduction',
-      'medical_expense',
-      'request_amount',
-    ];
-
-    // Check if dataExtraction has all keys
-    // If value is "Not Found", set it to empty string
-    // If length is 0, set it to empty string
-    dataExtractionKeys.forEach((key) => {
-      console.log(`key: ${key}, value: ${dataExtraction[key]}`);
-
-      if (!dataExtraction[key] || dataExtraction[key] === 'Not Found') {
-        dataExtraction = {};
+    // isLabel is true, then get data extraction
+    if (isLabel === 'true') {
+      // Get data extraction from http://localhost:3005/api/extract
+      try {
+        // const response = await axios.post('http://localhost:3005/api/extract', {
+        const response = await axios.post('http://localhost:3005/api/extract', {
+          text: jfull,
+        });
+        dataExtraction = response.data;
+      } catch (error) {
+        dataExtraction = `Error extracting data: ${error.message}`;
       }
-    });
+
+      // If any dataExtraction' value is not found, set it to empty string
+      const dataExtractionKeys = [
+        'compensation_amount',
+        'injured_part',
+        'labor_ability_reduction',
+        'medical_expense',
+        'request_amount',
+      ];
+
+      // Check if dataExtraction has all keys
+      // If value is "Not Found", set it to empty string
+      // If length is 0, set it to empty string
+      dataExtractionKeys.forEach((key) => {
+        console.log(`key: ${key}, value: ${dataExtraction[key]}`);
+
+        if (!dataExtraction[key] || dataExtraction[key] === 'Not Found') {
+          dataExtraction = {};
+        }
+      });
+    }
 
     // add dataExtraction to caseData
     caseData.dataExtraction = dataExtraction;
@@ -223,11 +230,15 @@ router.get('/case/:id', authenticateToken, async (req, res) => {
 });
 
 // Get id list of all cases
-router.get('/all-id', authenticateToken, async (req, res) => {
+router.get('/all-id/:isLabel', authenticateToken, async (req, res) => {
+  const { isLabel } = req.params;
+
+  const isHide = isLabel === 'true' ? false : true;
+
   try {
     const caseIds = await prisma.case.findMany({
       select: { id: true },
-      where: { is_hide: false },
+      where: { is_hide: isHide },
     });
     res.json(caseIds);
   } catch (error) {

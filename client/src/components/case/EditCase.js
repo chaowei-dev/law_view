@@ -88,9 +88,10 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
               setFormCase((prev) => ({ ...prev, JID: e.target.value }))
             }
             placeholder="Enter JID"
+            disabled
           />
         </InputGroup>
-        <InputGroup className="mb-3">
+        {/* <InputGroup className="mb-3">
           <InputGroup.Text id="inputGroup-sizing-sm">Year:</InputGroup.Text>
           <Form.Control
             aria-label="Year"
@@ -149,7 +150,7 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
             }
             placeholder="Enter Title"
           />
-        </InputGroup>
+        </InputGroup> */}
         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
           <Form.Label>Remarks:</Form.Label>
           <Form.Control

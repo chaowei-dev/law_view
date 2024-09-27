@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {  Table } from 'react-bootstrap';
 
-const DataExtract = ({ dataExtraction }) => {
+const DataExtract = ({ dataExtraction, isLabel }) => {
   const [dataExtractionDict, setDataExtractionDict] = useState({
     compensation_amount: '',
     request_amount: '',

@@ -53,7 +53,10 @@ function App() {
                 {isLogin && userRole && (
                   <>
                     <Nav.Link as={Link} to="/cases/view/1">
-                      案件檢視
+                      案件檢視(有Labels)
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/cases-non-label/view/1">
+                      案件檢視(無Labels)
                     </Nav.Link>
                     <Nav.Link
                       as={Link}
@@ -164,11 +167,12 @@ function App() {
           }
         />
         {/* Normal user auth */}
+        {/* with label */}
         <Route
           path="/cases/view/:id"
           element={
             <PrivateRoute allowedUser={['super-user', 'user']}>
-              <Cases />
+              <Cases isLabel={true} />
             </PrivateRoute>
           }
         />
@@ -176,7 +180,16 @@ function App() {
           path="/cases/list/:pageSize/:pageNum/:caseKeyword?"
           element={
             <PrivateRoute allowedUser={['super-user', 'user']}>
-              <CaseList />
+              <CaseList isLabel={true} />
+            </PrivateRoute>
+          }
+        />
+        {/* without label */}
+        <Route
+          path="/cases-non-label/view/:id"
+          element={
+            <PrivateRoute allowedUser={['super-user', 'user']}>
+              <Cases isLabel={false} />
             </PrivateRoute>
           }
         />

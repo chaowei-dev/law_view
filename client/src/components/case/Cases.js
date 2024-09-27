@@ -7,7 +7,7 @@ import keywordService from '../../services/keywordService';
 import DataExtract from './DataExtract';
 import EditCase from './EditCase';
 
-const Cases = () => {
+const Cases = ({ isLabel }) => {
   const { id: caseId } = useParams();
   const navigate = useNavigate();
   const [caseIDs, setCaseIDs] = useState([]);
@@ -23,7 +23,7 @@ const Cases = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [dataExtraction, setDataExtraction] = useState({});
   const [editingWindowShow, setEditingWindowShow] = useState(false);
-
+  
   // Fetch all keywords
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -41,7 +41,7 @@ const Cases = () => {
   useEffect(() => {
     const fetchCaseIDs = async () => {
       try {
-        const response = await caseService.getAllCaseIDs();
+        const response = await caseService.getAllCaseIDs(isLabel);
         setCaseIDs(response.data);
         const index = response.data.findIndex(
           (caseItem) => caseItem.id.toString() === caseId
@@ -52,14 +52,17 @@ const Cases = () => {
       }
     };
     fetchCaseIDs();
-  }, [caseId]);
+  }, [caseId, isLabel]);
 
   // Fetch case content by index
   const fetchContent = useCallback(async () => {
+    const isLabelText = isLabel ? 'true' : 'false';
+
     if (caseIDs.length > 0 && caseIDs[currentIndex]) {
       try {
         const response = await caseService.getCaseById(
-          caseIDs[currentIndex].id
+          caseIDs[currentIndex].id,
+          isLabelText
         );
         setCurrentCase(response.data);
         setDataExtraction(response.data.dataExtraction);
@@ -188,20 +191,23 @@ const Cases = () => {
   };
 
   // Navigation handlers
+  const isLabelPage = isLabel ? '/cases' : "/cases-non-label";
+  
   const handlePrevCase = () => {
+
     if (currentIndex > 0)
-      navigate(`/cases/view/${caseIDs[currentIndex - 1].id}`);
+      navigate(`${isLabelPage}/view/${caseIDs[currentIndex - 1].id}`);
   };
 
   const handleNextCase = () => {
     if (currentIndex < caseIDs.length - 1)
-      navigate(`/cases/view/${caseIDs[currentIndex + 1].id}`);
+      navigate(`${isLabelPage}/view/${caseIDs[currentIndex + 1].id}`);
   };
 
   const handleInput = (e) => {
     const newIndex = parseInt(e.target.value, 10) - 1; // Convert to zero-based index
     if (!isNaN(newIndex) && newIndex >= 0 && newIndex < caseIDs.length) {
-      navigate(`/cases/view/${caseIDs[newIndex].id}`);
+      navigate(`${isLabelPage}/view/${caseIDs[newIndex].id}`);
     }
   };
 
@@ -319,7 +325,7 @@ const Cases = () => {
               aria-label="Default select example"
               value={secondKeywordText}
               onChange={handleSecondKeywordChange}
-              disabled={mainKeywordText === "原文"}
+              disabled={mainKeywordText === '原文'}
             >
               <option>無</option>
               {keywordList.map(
@@ -382,7 +388,7 @@ const Cases = () => {
       <Row>
         {/* Extraction */}
         <Col sm={4}>
-          <DataExtract dataExtraction={dataExtraction} />
+          <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} />
         </Col>
         {/* Content */}
         <Col sm={8}>

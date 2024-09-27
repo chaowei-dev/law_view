@@ -50,8 +50,8 @@ const caseService = {
   },
 
   // /api/cases/case/{id}
-  getCaseById: (id) => {
-    return axios.get(API_URL + 'case/' + id, {
+  getCaseById: (id, isLabel) => {
+    return axios.get(API_URL + 'case/' + isLabel + '/' + id, {
       headers: {
         Authorization:
           'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
@@ -60,8 +60,8 @@ const caseService = {
   },
 
   // /api/cases/all-id
-  getAllCaseIDs: () => {
-    return axios.get(API_URL + 'all-id', {
+  getAllCaseIDs: (isLabel) => {
+    return axios.get(API_URL + 'all-id' + '/' + isLabel, {
       headers: {
         Authorization:
           'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
