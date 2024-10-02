@@ -150,9 +150,10 @@ const CaseList = () => {
               <tr>
                 <th className="text-center">編號</th>
                 <th className="text-center">案件</th>
-                <th className="text-center">字號</th>
-                <th className="text-center">日期</th>
+                {/* <th className="text-center">字號</th> */}
+                {/* <th className="text-center">日期</th> */}
                 <th className="text-center">案由</th>
+                <th className="text-center">Extraction</th>
                 <th className="text-center">備註</th>
                 <th className="text-center">操作</th>
               </tr>
@@ -165,13 +166,16 @@ const CaseList = () => {
                       {serialNum++}
                     </th>
                     <th>
-                      <a href={`/cases/view/${c.id}`}>{c.jid}</a>
+                      {c.is_hide ? <a href={`/cases-non-label/view/${c.id}`}>{c.jid}</a> : <a href={`/cases/view/${c.id}`}>{c.jid}</a>}
                     </th>
-                    <th>
+                    {/* <th>
                       {c.jyear}年度{c.jcase}字第{c.jno}號
-                    </th>
-                    <th>{c.jdate}</th>
+                    </th> */}
+                    {/* <th>{c.jdate}</th> */}
                     <th>{c.jtitle}</th>
+                    <th>
+                      {c.is_hide ? "V" : ""}
+                    </th>
                     <th rowSpan="2">{c.remarks}</th>
                     <th rowSpan="2" className="align-middle">
                       {userRole === "super-user" && (

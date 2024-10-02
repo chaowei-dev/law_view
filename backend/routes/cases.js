@@ -51,6 +51,7 @@ router.get(
           createdAt: true,
           updatedAt: true,
           jfull: true,
+          is_hide: true,
         },
         where: whereClause,
         skip: offset,
