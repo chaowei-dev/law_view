@@ -174,7 +174,7 @@ const CaseList = () => {
                     {/* <th>{c.jdate}</th> */}
                     <th>{c.jtitle}</th>
                     <th>
-                      {c.is_hide ? "V" : ""}
+                      {c.is_hide ? "" : "V"}
                     </th>
                     <th rowSpan="2">{c.remarks}</th>
                     <th rowSpan="2" className="align-middle">
