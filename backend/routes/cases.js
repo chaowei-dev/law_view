@@ -382,4 +382,27 @@ router.post(
   }
 );
 
+// Mark all cases is_hide to true
+router.put(
+  '/mark-case-to-hide',
+  authenticateToken,
+  checkRole(['super-user']),
+  async (req, res) => {
+    try {
+      const updatedCase = await prisma.case.updateMany({
+        where: { is_hide: false },
+        data: { is_hide: true },
+      });
+
+      console.log('All cases marked as hidden.');
+
+      res.json(updatedCase);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: 'Error updating all cases', error: error.message });
+    }
+  }
+);
+
 export default router;

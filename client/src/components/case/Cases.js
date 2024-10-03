@@ -246,12 +246,12 @@ const Cases = ({ isLabel }) => {
   };
 
   // Render loading state or case content
-  if (!currentCase.jid) {
+  if (!currentCase.jid || caseIDs.length === 0) {
     return (
       <Container>
         <Row>
-          <Col>
-            <p>Loading...</p>
+          <Col xl="auto">
+            <h1>無任何案件...</h1>
           </Col>
         </Row>
       </Container>

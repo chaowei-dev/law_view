@@ -107,6 +107,17 @@ const caseService = {
       },
     });
   },
+
+  // Mark all cases to is_hide = true
+  // /api/cases/mark-case-to-hide
+  markCaseToHide: () => {
+    return axios.put(API_URL + 'mark-case-to-hide', null, {
+      headers: {
+        Authorization
+          : 'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
+      },
+    });
+  }
 };
 
 export default caseService;
