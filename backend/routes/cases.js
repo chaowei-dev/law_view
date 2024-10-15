@@ -40,8 +40,8 @@ router.get(
     // Improved logging
     // console.log("whereClause: ", JSON.stringify(whereClause, null, 2));
 
-    console.log("");
-    
+    console.log('');
+
     // Get all cases except jfull
     try {
       const cases = await prisma.case.findMany({
@@ -182,6 +182,25 @@ router.get('/case/:isLabel/:id', authenticateToken, async (req, res) => {
     // Get case data by id
     let caseData = await prisma.case.findUnique({
       where: { id: parseInt(id) },
+      select: {
+        id: true,
+        jid: true,
+        jyear: true,
+        jcase: true,
+        jno: true,
+        jdate: true,
+        jtitle: true,
+        remarks: true,
+        createdAt: true,
+        updatedAt: true,
+        jfull: true,
+        is_hide: true,
+        isHideUpdateAt: {
+          select: {
+            createdAt: true,
+          },
+        },
+      },
     });
 
     let dataExtraction = {};
@@ -244,16 +263,25 @@ router.get('/all-id/:isLabel', authenticateToken, async (req, res) => {
   const isHide = isLabel === 'true' ? false : true;
 
   try {
+    // Order by isHideUpdateAt table's updatedAt timestamp
+    let orderByClause = {};
+    if (isHide === false) {
+      orderByClause = { isHideUpdateAt: { updatedAt: 'asc' } };
+    }
+
+    // Get all case ids
     const caseIds = await prisma.case.findMany({
       select: { id: true },
       where: { is_hide: isHide },
-      orderBy: { updatedAt: 'asc' }
+      orderBy: orderByClause,
     });
+
     res.json(caseIds);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error retrieving case ids', error: error.message });
+    res.status(500).json({
+      message: 'Error retrieving case ids',
+      error: error.message,
+    });
   }
 });
 
@@ -346,7 +374,6 @@ router.post(
         return res.status(500).send(`Unknown upload error: ${err.message}`);
       }
 
-      // Everything went fine.
       if (!req.file) {
         return res.status(400).send('No file uploaded.');
       }
@@ -364,14 +391,34 @@ router.post(
             console.log('Marking cases...');
 
             for (let row of results) {
+              // Update is_hide to false for Case table
               const updatedCase = await prisma.case.updateMany({
-                where: { jid: row.jid },
+                where: {
+                  jid: row.jid,
+                  is_hide: true,
+                },
                 data: { is_hide: false },
               });
 
               if (updatedCase.count > 0) {
+                // Count updated cases
                 updatedCount += updatedCase.count;
+
+                // Find id of case from jid
+                const caseRecord = await prisma.case.findFirst({
+                  where: { jid: row.jid },
+                  select: { id: true },
+                });
+
+                if (caseRecord) {
+                  await prisma.isHideUpdateAt.upsert({
+                    where: { caseId: caseRecord.id },
+                    update: { updatedAt: new Date() },
+                    create: { caseId: caseRecord.id },
+                  });
+                }
               } else {
+                // Count skipped cases
                 skippedCount++;
               }
             }

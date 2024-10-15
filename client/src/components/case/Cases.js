@@ -219,7 +219,7 @@ const Cases = ({ isLabel }) => {
   // update remark of the case to "正確"
   const handleCorrectButtonClick = () => {
     caseService
-      .updateCase(currentCase.id, { remarks: '正確' })
+      .updateCase(currentCase.id, { REMARKS: '正確' })
       .then(() => {
         fetchContent();
       })
@@ -279,7 +279,7 @@ const Cases = ({ isLabel }) => {
               <Card.Title>
                 <b>{currentCase.jid}</b>
               </Card.Title>
-              <Card.Text>
+              <Card.Text style={{ fontSize: '60%' }}>
                 {currentCase.jyear}年度{currentCase.jcase}字第{currentCase.jno}
                 號 ({currentCase.jdate}), {currentCase.jtitle}
               </Card.Text>
@@ -299,11 +299,11 @@ const Cases = ({ isLabel }) => {
         <Col>
           <div className="d-flex justify-content-end mt-1">
             <Button
-              variant='outline-success'
+              variant="outline-success"
               onClick={() => handleCorrectButtonClick()}
             >
               正確
-          </Button>
+            </Button>
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(currentCase)}
@@ -406,6 +406,21 @@ const Cases = ({ isLabel }) => {
         {/* Extraction */}
         <Col sm={4}>
           <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} />
+          {/* Mark timestamp */}
+          {currentCase.isHideUpdateAt && (
+            <>
+              標記日期:{' '}
+              {new Date(currentCase.isHideUpdateAt.createdAt).toLocaleString(
+                'zh-TW',
+                {
+                  timeZone: 'Asia/Taipei',
+                  hour12: false,
+                }
+              )}
+              <br />
+            </>
+          )}
+          {/* Update timestamp */}
           更新日期:{' '}
           {new Date(currentCase.updatedAt).toLocaleString('zh-TW', {
             timeZone: 'Asia/Taipei',

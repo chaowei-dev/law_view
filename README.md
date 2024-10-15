@@ -84,8 +84,13 @@
   - `docker network create backend_network`
 - add .env:
   - `DATABASE_URL="postgresql://user:passowrd@localhost:5432/law_view"`
-- npx prisma generate
-- npx prisma migrate dev --name init
+
+# Prisma 
+
+- `npx prisma generate`
+- `npx prisma migrate dev --name init`
+- Push the `.sql` of prisma created to github
+- use `npx prisma migrate deploy` to deploy on product env
 
 # Linux
 

@@ -38,10 +38,12 @@ model Case {
   remarks   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  is_hide   Boolean  @default(true)
+  is_hide   Boolean  @default(true)  // true = non-marked, false = marked
   // Foreign key to associate each case with a user
   userId    Int
   user      User     @relation(fields: [userId], references: [id]) // Relates each case to a user
+  // One-to-one relationship with Keyword
+  isHideUpdateAt  IsHideUpdateAt?
 }
 
 model Keyword {
@@ -50,4 +52,13 @@ model Keyword {
   pattern   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// when a user marks is_hide to false of Case table, then update the timestamp of this table
+model IsHideUpdateAt {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  caseId    Int      @unique
+  case      Case     @relation(fields: [caseId], references: [id])
 }
