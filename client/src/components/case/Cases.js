@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
-import { ArrowLeftCircle, ArrowRightCircle } from 'react-bootstrap-icons';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import caseService from '../../services/caseService';
 import keywordService from '../../services/keywordService';
 import DataExtract from './DataExtract';
 import EditCase from './EditCase';
+import CaseNav from './CaseNav';
+import CaseView from './CaseView';
 
 const Cases = ({ isLabel }) => {
   const { id: caseId } = useParams();
@@ -13,18 +14,15 @@ const Cases = ({ isLabel }) => {
   const [caseIDs, setCaseIDs] = useState([]);
   const [currentCase, setCurrentCase] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [keywordContent, setKeywordContent] = useState('');
   const [mainKeywordText, setMainKeywordText] = useState('原文');
   const [secondKeywordText, setSecondKeywordText] = useState('無');
   const [keywordList, setKeywordList] = useState([]);
   const [oriHighlightContent, setOriHighlightContent] = useState('');
-  const [showTrimmedContent, setShowTrimmedContent] = useState(false);
-  const [showTrimButton, setShowTrimButton] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [dataExtraction, setDataExtraction] = useState({});
   const [editingWindowShow, setEditingWindowShow] = useState(false);
 
-  // Fetch all keywords
+  // Step 1: Fetch all keywords
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
@@ -37,7 +35,7 @@ const Cases = ({ isLabel }) => {
     fetchKeywords();
   }, []);
 
-  // Fetch all case IDs and determine the current index
+  // Step 2: Fetch all case IDs
   useEffect(() => {
     const fetchCaseIDs = async () => {
       try {
@@ -54,7 +52,7 @@ const Cases = ({ isLabel }) => {
     fetchCaseIDs();
   }, [caseId, isLabel]);
 
-  // Fetch case content by index
+  // Step 3: Fetch case content by index
   const fetchContent = useCallback(async () => {
     const isLabelText = isLabel ? 'true' : 'false';
 
@@ -75,112 +73,7 @@ const Cases = ({ isLabel }) => {
 
   useEffect(() => {
     fetchContent();
-  }, [fetchContent]);
-
-  // Update keyword content when current case or keyword text changes
-  useEffect(() => {
-    if (currentCase && currentCase.jfull) {
-      let mainRegexPattern;
-      let secondRegexPattern;
-
-      // If the keyword is "原文", display the full content
-      if (mainKeywordText === '原文') {
-        setKeywordContent(currentCase.jfull);
-        setShowTrimmedContent(false);
-        setShowTrimButton(false);
-        return;
-      } else {
-        setShowTrimButton(true);
-      }
-
-      // Main keyword regex pattern
-      const mainKeywordObj = keywordList.find(
-        (k) => k.keyword === mainKeywordText
-      );
-
-      mainRegexPattern =
-        mainKeywordObj && mainKeywordObj.pattern
-          ? new RegExp(mainKeywordObj.pattern, 'gi')
-          : new RegExp(mainKeywordText, 'gi');
-
-      // If second keyword is "無"
-      // Highlight the main keyword only
-      if (secondKeywordText === '無') {
-        highlightContent(mainRegexPattern, null);
-        return;
-      }
-
-      // Second keyword regex pattern
-      const secondKeywordObj = keywordList.find(
-        (k) => k.keyword === secondKeywordText
-      );
-
-      secondRegexPattern =
-        secondKeywordObj && secondKeywordObj.pattern
-          ? new RegExp(secondKeywordObj.pattern, 'gi')
-          : new RegExp(secondKeywordText, 'gi');
-
-      // Highlight the keywords
-      highlightContent(mainRegexPattern, secondRegexPattern);
-    }
-  }, [currentCase, mainKeywordText, secondKeywordText, keywordList]);
-
-  // Highlight the keywords in the original content
-  const highlightContent = (mainRegexPattern, secondRegexPattern) => {
-    // 1. Check main keyword is found in the content
-    if (mainRegexPattern && !mainRegexPattern.test(currentCase.jfull)) {
-      setKeywordContent(`${mainKeywordText} NOT FOUND!`);
-      return;
-    }
-
-    // 2. Original content highlighting
-    let highlightedOriginalContent = currentCase.jfull;
-
-    // 2-1. Highlight the main keyword
-    if (mainRegexPattern) {
-      highlightedOriginalContent = highlightedOriginalContent.replace(
-        mainRegexPattern,
-        (match) => `<mark><b>${match}</b></mark>`
-      );
-    }
-
-    // 2-2. Highlight the second keyword
-    if (secondRegexPattern) {
-      highlightedOriginalContent = highlightedOriginalContent.replace(
-        secondRegexPattern,
-        (match) => `<mark><b>${match}</b></mark>`
-      );
-    }
-
-    setOriHighlightContent(highlightedOriginalContent.trim());
-
-    // 3-1. Trimmed content with main keyword
-    const startIndex = mainRegexPattern
-      ? mainRegexPattern.exec(currentCase.jfull)?.index || 0
-      : 0;
-
-    const textAfterKeyword = currentCase.jfull.substring(startIndex);
-    let highlightedKeywordContent = textAfterKeyword;
-
-    // 3-2. Highlight the main keyword
-    if (mainRegexPattern) {
-      highlightedKeywordContent = highlightedKeywordContent.replace(
-        mainRegexPattern,
-        (match) => `<mark><b>${match}</b></mark>`
-      );
-    }
-
-    // 3-3. Highlight the second keyword
-    if (secondRegexPattern) {
-      highlightedKeywordContent = highlightedKeywordContent.replace(
-        secondRegexPattern,
-        (match) =>
-          `<mark style="background-color: orange;"><b>${match}</b></mark>`
-      );
-    }
-
-    setKeywordContent(highlightedKeywordContent.trim());
-  };
+  }, [fetchContent]); // eslint-disable-next-line
 
   // Handler for keyword selection change
   const handleMainKeywordChange = (e) => {
@@ -188,26 +81,6 @@ const Cases = ({ isLabel }) => {
   };
   const handleSecondKeywordChange = (e) => {
     setSecondKeywordText(e.target.value);
-  };
-
-  // Navigation handlers
-  const isLabelPage = isLabel ? '/cases' : '/cases-non-label';
-
-  const handlePrevCase = () => {
-    if (currentIndex > 0)
-      navigate(`${isLabelPage}/view/${caseIDs[currentIndex - 1].id}`);
-  };
-
-  const handleNextCase = () => {
-    if (currentIndex < caseIDs.length - 1)
-      navigate(`${isLabelPage}/view/${caseIDs[currentIndex + 1].id}`);
-  };
-
-  const handleInput = (e) => {
-    const newIndex = parseInt(e.target.value, 10) - 1; // Convert to zero-based index
-    if (!isNaN(newIndex) && newIndex >= 0 && newIndex < caseIDs.length) {
-      navigate(`${isLabelPage}/view/${caseIDs[newIndex].id}`);
-    }
   };
 
   // EDITING
@@ -380,30 +253,12 @@ const Cases = ({ isLabel }) => {
           sm={4}
           className="d-flex align-items-center justify-content-center"
         >
-          <Button
-            variant="link"
-            onClick={handlePrevCase}
-            disabled={currentIndex === 0}
-          >
-            <ArrowLeftCircle size={24} />
-          </Button>
-          <Form.Control
-            type="number"
-            value={currentIndex + 1}
-            onChange={handleInput}
-            style={{ width: '80px' }}
-            min="1"
-            max={caseIDs.length}
-            className="me-2 ms-2"
+          <CaseNav
+            currentIndex={currentIndex}
+            caseIDs={caseIDs}
+            navigate={navigate}
+            isLabel={isLabel}
           />
-          <span>/ {caseIDs.length}</span>
-          <Button
-            variant="link"
-            onClick={handleNextCase}
-            disabled={currentIndex === caseIDs.length - 1}
-          >
-            <ArrowRightCircle size={24} />
-          </Button>
         </Col>
         {/* Copy button */}
         <Col
@@ -435,36 +290,15 @@ const Cases = ({ isLabel }) => {
           更新日期: {formatDateTime(currentCase.updatedAt)}
         </Col>
         {/* Content */}
+        {/* If "currentCase", "mainKeywordText", "secondKeywordText", "keywordList" */}
+        {/* are updated then rerender the CaseView */}
         <Col sm={8}>
-          <div style={{ position: 'relative' }}>
-            {/* Trim button */}
-            {showTrimButton && (
-              <Button
-                type="button"
-                variant={
-                  showTrimmedContent ? 'primary ms-auto' : 'secondary ms-auto'
-                }
-                style={{ position: 'absolute', top: '10px', right: '20px' }}
-                onClick={() => setShowTrimmedContent(!showTrimmedContent)}
-              >
-                {showTrimmedContent ? '裁切' : '全文'}
-              </Button>
-            )}
-            <div
-              style={{
-                padding: '10px',
-                border: '1px solid #dee2e6',
-                maxHeight: '700px',
-                overflowY: 'auto',
-                whiteSpace: 'pre-wrap',
-              }}
-              dangerouslySetInnerHTML={{
-                __html: showTrimmedContent
-                  ? oriHighlightContent
-                  : keywordContent || 'No Content Available',
-              }}
-            ></div>
-          </div>
+          <CaseView
+            currentCase={currentCase}
+            mainKeywordText={mainKeywordText}
+            secondKeywordText={secondKeywordText}
+            keywordList={keywordList}
+          />
         </Col>
       </Row>
       {/* Editing modal */}
