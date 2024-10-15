@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
 import {
   buildDynamicKeywordClause,
+  buildDynamicOrderBy,
   processJfull,
 } from '../utils/processKeyword.js';
 import axios from 'axios';
@@ -33,6 +34,9 @@ router.get(
     // Build where clause dynamically
     let whereClause = buildDynamicKeywordClause(searchKeyword);
 
+    // Build orderBy for updatedAt (default(id), desc, asc)
+    let orderByClause = buildDynamicOrderBy(searchKeyword);
+
     // Improved logging
     // console.log("whereClause: ", JSON.stringify(whereClause, null, 2));
 
@@ -56,6 +60,7 @@ router.get(
         where: whereClause,
         skip: offset,
         take: intSize,
+        orderBy: orderByClause,
       });
 
       // Summary jfull with every case

@@ -136,7 +136,7 @@ const MarkCase = () => {
       <Row className="mt-5 align-items-center">
         <Col className="text-center">
           <div className="d-flex flex-column align-items-center">
-            <p>請標記案件前，初始化所有案件。</p>
+            <p>初始化所有案件，意思為清楚所有案件的標記為「無Labels」。</p>
             <p>檔案來源: /res/caselist.csv</p>
           </div>
         </Col>

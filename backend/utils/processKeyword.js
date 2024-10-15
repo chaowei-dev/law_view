@@ -54,10 +54,12 @@ export const buildDynamicKeywordClause = (searchKeyword) => {
   const jidKeyword = params.get("jid") || "";
   const remarksKeyword = params.get("remarks") || "";
   const jfullKeyword = params.get("jfull") || "";
+  const isHide = params.get("isHide") || "";
+  const desc = params.get("desc") || "";
 
   // Log
   console.log(
-    `jidKeyword:${jidKeyword}, remarksKeyword:${remarksKeyword}, jfullKeyword:${jfullKeyword}`
+    `jidKeyword:${jidKeyword}, remarksKeyword:${remarksKeyword}, jfullKeyword:${jfullKeyword}, isHide:${isHide}`
   );
 
   // Build the where clause based on the keyword
@@ -66,8 +68,10 @@ export const buildDynamicKeywordClause = (searchKeyword) => {
   if (jidKeyword || remarksKeyword || jfullKeyword) {
     whereClause.AND = [];
 
+    // "jid" keyword
     if (jidKeyword) whereClause.AND.push({ jid: { contains: jidKeyword } });
 
+    // "remarks" keyword
     // Check remarks is not empty
     // 1. return cases with keyword
     // 2. return cases with non-empty remarks (any character)
@@ -77,9 +81,34 @@ export const buildDynamicKeywordClause = (searchKeyword) => {
       whereClause.AND.push({ remarks: { contains: remarksKeyword } });
     }
 
+    // "jfull" keyword
     if (jfullKeyword)
       whereClause.AND.push({ jfull: { contains: jfullKeyword } });
+
+    // "isHide" keyword (boolean)
+    if (isHide === "true") whereClause.AND.push({ is_hide: true });
+    if (isHide === "false") whereClause.AND.push({ is_hide: false });
   }
 
   return whereClause;
 };
+
+export const buildDynamicOrderBy = (searchKeyword) => {
+  const params = new URLSearchParams(searchKeyword);
+
+  let desc = params.get('desc') || '';
+  
+  console.log(`desc: ${desc}`);
+  
+  let orderByClause = {};
+
+  if (desc === 'true') {
+    orderByClause = { updatedAt: 'desc' };
+  }
+
+  if (desc === 'false') {
+    orderByClause = { updatedAt: 'asc' };
+  }
+
+  return orderByClause;
+}

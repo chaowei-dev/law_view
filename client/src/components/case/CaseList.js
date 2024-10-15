@@ -20,7 +20,7 @@ import CaseSearch from "./CaseSearch";
 
 const CaseList = () => {
   // use params and navigate
-  const { pageNum, pageSize, caseKeyword } = useParams();
+  const { pageNum, pageSize, caseKeyword, isHide } = useParams();
   const navigate = useNavigate();
 
   // Use state
@@ -40,7 +40,8 @@ const CaseList = () => {
       const response = await caseService.getAllCases(
         pageSize,
         pageNum,
-        caseKeyword
+        caseKeyword,
+        isHide
       );
       setCaseList(response.data);
     } catch (error) {
