@@ -245,6 +245,7 @@ router.get('/all-id/:isLabel', authenticateToken, async (req, res) => {
     const caseIds = await prisma.case.findMany({
       select: { id: true },
       where: { is_hide: isHide },
+      orderBy: { updatedAt: 'asc' }
     });
     res.json(caseIds);
   } catch (error) {
