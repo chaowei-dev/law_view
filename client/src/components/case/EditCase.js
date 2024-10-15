@@ -4,12 +4,12 @@ import caseService from "../../services/caseService";
 
 const EditCase = ({ onHide, show, lawCase, onSave }) => {
   const [formCase, setFormCase] = useState({
-    ID: "",
-    JID: "",
-    JYEAR: "",
-    JCASE: "",
-    JNO: "",
-    JDATE: "",
+    // ID: "",
+    // JID: "",
+    // JYEAR: "",
+    // JCASE: "",
+    // JNO: "",
+    // JDATE: "",
     JTITLE: "",
     REMARKS: "",
   });

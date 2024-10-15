@@ -262,25 +262,26 @@ router.put(
   checkRole(['super-user']),
   async (req, res) => {
     const { id } = req.params;
-    const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
+    // const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
+    const { REMARKS } = req.body;
 
     // Replace \r\n to <br/> for line break
     // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
 
-    const intJYEAR = parseInt(JYEAR);
-    const intJNO = parseInt(JNO);
+    // const intJYEAR = parseInt(JYEAR);
+    // const intJNO = parseInt(JNO);
 
     try {
       const updatedCase = await prisma.case.update({
         where: { id: parseInt(id) },
         data: {
-          jid: JID,
-          jyear: intJYEAR,
-          jcase: JCASE,
-          jno: intJNO,
-          jdate: JDATE,
-          jtitle: JTITLE,
-          jfull: JFULL,
+          // jid: JID,
+          // jyear: intJYEAR,
+          // jcase: JCASE,
+          // jno: intJNO,
+          // jdate: JDATE,
+          // jtitle: JTITLE,
+          // jfull: JFULL,
           remarks: REMARKS,
         },
       });

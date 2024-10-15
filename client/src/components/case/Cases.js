@@ -216,6 +216,18 @@ const Cases = ({ isLabel }) => {
     setEditingWindowShow(true);
   };
 
+  // update remark of the case to "正確"
+  const handleCorrectButtonClick = () => {
+    caseService
+      .updateCase(currentCase.id, { remarks: '正確' })
+      .then(() => {
+        fetchContent();
+      })
+      .catch((error) => {
+        console.error('Error updating case:', error);
+      });
+  };
+
   // Handle copy button
   const copyToClipboard = (text) => {
     // Clipboard API is not supported, use fallback method
@@ -286,6 +298,12 @@ const Cases = ({ isLabel }) => {
         {/* EDIT button */}
         <Col>
           <div className="d-flex justify-content-end mt-1">
+            <Button
+              variant='outline-success'
+              onClick={() => handleCorrectButtonClick()}
+            >
+              正確
+          </Button>
             <Button
               variant="outline-dark"
               onClick={() => handleEditClick(currentCase)}
