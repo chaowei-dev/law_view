@@ -23,7 +23,7 @@ const Cases = ({ isLabel }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [dataExtraction, setDataExtraction] = useState({});
   const [editingWindowShow, setEditingWindowShow] = useState(false);
-  
+
   // Fetch all keywords
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -191,10 +191,9 @@ const Cases = ({ isLabel }) => {
   };
 
   // Navigation handlers
-  const isLabelPage = isLabel ? '/cases' : "/cases-non-label";
-  
-  const handlePrevCase = () => {
+  const isLabelPage = isLabel ? '/cases' : '/cases-non-label';
 
+  const handlePrevCase = () => {
     if (currentIndex > 0)
       navigate(`${isLabelPage}/view/${caseIDs[currentIndex - 1].id}`);
   };
@@ -389,6 +388,11 @@ const Cases = ({ isLabel }) => {
         {/* Extraction */}
         <Col sm={4}>
           <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} />
+          更新日期:{' '}
+          {new Date(currentCase.updatedAt).toLocaleString('zh-TW', {
+            timeZone: 'Asia/Taipei',
+            hour12: false,
+          })}
         </Col>
         {/* Content */}
         <Col sm={8}>

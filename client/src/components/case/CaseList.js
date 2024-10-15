@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Row,
@@ -8,15 +8,15 @@ import {
   Dropdown,
   Modal,
   Button,
-} from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+} from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import caseService from "../../services/caseService";
-import authService from "../../services/authService";
+import caseService from '../../services/caseService';
+import authService from '../../services/authService';
 
-import EditCase from "./EditCase";
-import CasePagination from "./CasePagination";
-import CaseSearch from "./CaseSearch";
+import EditCase from './EditCase';
+import CasePagination from './CasePagination';
+import CaseSearch from './CaseSearch';
 
 const CaseList = () => {
   // use params and navigate
@@ -29,7 +29,7 @@ const CaseList = () => {
   const [totalCases, setTotalCases] = useState(0);
   const [deletingConfirmShow, setDeletingConfirmShow] = useState(false);
   const [editingWindowShow, setEditingWindowShow] = useState(false);
-  const [currentCase, setCurrentCase] = useState(""); // To track which case is being edited
+  const [currentCase, setCurrentCase] = useState(''); // To track which case is being edited
 
   // Get user role
   const userRole = authService.getUserRole();
@@ -45,7 +45,7 @@ const CaseList = () => {
       );
       setCaseList(response.data);
     } catch (error) {
-      console.error("Error fetching cases:", error);
+      console.error('Error fetching cases:', error);
     }
   };
 
@@ -64,7 +64,7 @@ const CaseList = () => {
         setTotalCases(response.data.count);
         setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
-        console.error("Error fetching number of cases:", error);
+        console.error('Error fetching number of cases:', error);
       }
     };
 
@@ -98,7 +98,7 @@ const CaseList = () => {
         fetchCaseList();
       })
       .catch((error) => {
-        console.error("Error deleting case:", error);
+        console.error('Error deleting case:', error);
       });
   };
 
@@ -135,7 +135,7 @@ const CaseList = () => {
 
   return (
     <Container>
-      <Row style={{ marginTop: "20px" }}>
+      <Row style={{ marginTop: '20px' }}>
         <Col>
           <CaseSearch caseKeyword={caseKeyword} navigate={navigate} />
         </Col>
@@ -154,7 +154,8 @@ const CaseList = () => {
                 {/* <th className="text-center">字號</th> */}
                 {/* <th className="text-center">日期</th> */}
                 <th className="text-center">案由</th>
-                <th className="text-center">Extraction</th>
+                <th className="text-center">標記</th>
+                <th className="text-center">更新日期</th>
                 <th className="text-center">備註</th>
                 <th className="text-center">操作</th>
               </tr>
@@ -167,19 +168,33 @@ const CaseList = () => {
                       {serialNum++}
                     </th>
                     <th>
-                      {c.is_hide ? <a href={`/cases-non-label/view/${c.id}`}>{c.jid}</a> : <a href={`/cases/view/${c.id}`}>{c.jid}</a>}
+                      {c.is_hide ? (
+                        <a href={`/cases-non-label/view/${c.id}`}>{c.jid}</a>
+                      ) : (
+                        <a href={`/cases/view/${c.id}`}>{c.jid}</a>
+                      )}
                     </th>
                     {/* <th>
                       {c.jyear}年度{c.jcase}字第{c.jno}號
                     </th> */}
                     {/* <th>{c.jdate}</th> */}
                     <th>{c.jtitle}</th>
+                    <th>{c.is_hide ? '' : 'V'}</th>
                     <th>
-                      {c.is_hide ? "" : "V"}
+                      {new Date(c.updatedAt).toLocaleDateString('zh-TW', {
+                        timeZone: 'Asia/Taipei',
+                      })}{' '}
+                      {new Date(c.updatedAt).toLocaleTimeString('zh-TW', {
+                        timeZone: 'Asia/Taipei',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })}
                     </th>
+
                     <th rowSpan="2">{c.remarks}</th>
                     <th rowSpan="2" className="align-middle">
-                      {userRole === "super-user" && (
+                      {userRole === 'super-user' && (
                         <Dropdown>
                           <Dropdown.Toggle
                             variant="secondary"
@@ -223,7 +238,7 @@ const CaseList = () => {
             as="select"
             value={pageSize}
             onChange={(e) => handlePageLimitChange(e.target.value)}
-            style={{ width: "100px" }}
+            style={{ width: '100px' }}
           >
             <option value="2">2</option>
             <option value="5">5</option>
