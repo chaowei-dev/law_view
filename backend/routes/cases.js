@@ -18,7 +18,7 @@ const prisma = new PrismaClient();
 // Table:
 // id | jid | jyear | jcase | jno | jdate | jtitle | jfull \ remarks \ createdAt | updatedAt \ userId(FK to user table)
 
-// Get all cases with summary jfull (every page have i items, use page to navigate)
+// Get case list with detail and summary jfull (every page have i items, use page to navigate)
 router.get(
   '/list/:size/:page/:searchKeyword',
   authenticateToken,
@@ -40,6 +40,8 @@ router.get(
     // Improved logging
     // console.log("whereClause: ", JSON.stringify(whereClause, null, 2));
 
+    console.log("");
+    
     // Get all cases except jfull
     try {
       const cases = await prisma.case.findMany({

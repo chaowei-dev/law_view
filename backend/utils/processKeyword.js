@@ -51,43 +51,49 @@ export const processJfull = (cases, searchKeyword) => {
 export const buildDynamicKeywordClause = (searchKeyword) => {
   // Parse searchKeyword and extract individual keywords
   const params = new URLSearchParams(searchKeyword);
-  const jidKeyword = params.get("jid") || "";
-  const remarksKeyword = params.get("remarks") || "";
-  const jfullKeyword = params.get("jfull") || "";
-  const isHide = params.get("isHide") || "";
-  const desc = params.get("desc") || "";
+
+  const searchObj = {
+    jid: params.get("jid") || "",
+    remarks: params.get("remarks") || "",
+    jfull: params.get("jfull") || "",
+    isHide: params.get("isHide") || "",
+  }
+  // const jidKeyword = params.get("jid") || "";
+  // const remarksKeyword = params.get("remarks") || "";
+  // const jfullKeyword = params.get("jfull") || "";
+  // const isHide = params.get("isHide") || "";
 
   // Log
   console.log(
-    `jidKeyword:${jidKeyword}, remarksKeyword:${remarksKeyword}, jfullKeyword:${jfullKeyword}, isHide:${isHide}`
+    `jid:${searchObj.jid}, remarks:${searchObj.remarks}, jfull:${searchObj.jfull}, isHide:${searchObj.isHide}`
   );
 
   // Build the where clause based on the keyword
   let whereClause = {};
 
-  if (jidKeyword || remarksKeyword || jfullKeyword) {
+  if (Object.keys(searchObj).length > 0) {
     whereClause.AND = [];
 
     // "jid" keyword
-    if (jidKeyword) whereClause.AND.push({ jid: { contains: jidKeyword } });
+    if (searchObj.jid) whereClause.AND.push({ jid: { contains: searchObj.jid } });
 
     // "remarks" keyword
     // Check remarks is not empty
     // 1. return cases with keyword
     // 2. return cases with non-empty remarks (any character)
-    if (remarksKeyword === "!null") {
+    if (searchObj.remarks === "!null") {
       whereClause.AND.push({ remarks: { not: "" } });
-    } else if (remarksKeyword) {
-      whereClause.AND.push({ remarks: { contains: remarksKeyword } });
+    } else if (searchObj.remarks) {
+      whereClause.AND.push({ remarks: { contains: searchObj.remarks } });
     }
 
     // "jfull" keyword
-    if (jfullKeyword)
-      whereClause.AND.push({ jfull: { contains: jfullKeyword } });
+    if (searchObj.jfull)
+      whereClause.AND.push({ jfull: { contains: searchObj.jfull } });
 
     // "isHide" keyword (boolean)
-    if (isHide === "true") whereClause.AND.push({ is_hide: true });
-    if (isHide === "false") whereClause.AND.push({ is_hide: false });
+    if (searchObj.isHide === "true") whereClause.AND.push({ is_hide: true });
+    if (searchObj.isHide === "false") whereClause.AND.push({ is_hide: false });    
   }
 
   return whereClause;

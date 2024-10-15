@@ -151,8 +151,6 @@ const CaseList = () => {
               <tr>
                 <th className="text-center">編號</th>
                 <th className="text-center">案件</th>
-                {/* <th className="text-center">字號</th> */}
-                {/* <th className="text-center">日期</th> */}
                 <th className="text-center">案由</th>
                 <th className="text-center">標記</th>
                 <th className="text-center">更新日期</th>
@@ -162,8 +160,8 @@ const CaseList = () => {
             </thead>
             <tbody>
               {caseList.map((c) => (
-                <>
-                  <tr key={c.id}>
+                <React.Fragment key={c.id}>
+                  <tr>
                     <th rowSpan="2" className="text-center align-middle">
                       {serialNum++}
                     </th>
@@ -174,10 +172,6 @@ const CaseList = () => {
                         <a href={`/cases/view/${c.id}`}>{c.jid}</a>
                       )}
                     </th>
-                    {/* <th>
-                      {c.jyear}年度{c.jcase}字第{c.jno}號
-                    </th> */}
-                    {/* <th>{c.jdate}</th> */}
                     <th>{c.jtitle}</th>
                     <th>{c.is_hide ? '' : 'V'}</th>
                     <th>
@@ -216,14 +210,14 @@ const CaseList = () => {
                       )}
                     </th>
                   </tr>
-                  <tr>
+                  <tr key={`${c.id}-summary`}>
                     <td colSpan="4" className="text-left">
                       <div
                         dangerouslySetInnerHTML={{ __html: c.jfullSummary }}
                       />
                     </td>
                   </tr>
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </Table>

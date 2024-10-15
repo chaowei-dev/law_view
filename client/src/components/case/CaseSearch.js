@@ -23,6 +23,7 @@ const CaseSearch = ({ caseKeyword }) => {
       const [jid, remarks, jfull, isHide, desc] = caseKeyword
         .split('&')
         .map((kw) => kw.split('=')[1]);
+      console.log(`jid:${jid}, remarks:${remarks}, jfull:${jfull}, isHide:${isHide}, desc:${desc}`);
       setJidKeyword(jid || '');
       setRemarksKeyword(remarks || '');
       setJfullKeyword(jfull || '');
