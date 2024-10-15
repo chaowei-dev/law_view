@@ -197,7 +197,7 @@ router.get('/case/:isLabel/:id', authenticateToken, async (req, res) => {
         is_hide: true,
         isHideUpdateAt: {
           select: {
-            createdAt: true,
+            updatedAt: true,
           },
         },
       },

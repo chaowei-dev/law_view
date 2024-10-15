@@ -256,6 +256,24 @@ const Cases = ({ isLabel }) => {
     }, 2000);
   };
 
+  // Format the date/time string to "yyyy/MM/dd (HH:mm)"
+  const formatDateTime = (date) => {
+    const newDate = new Date(date).toLocaleString('zh-TW', {
+      timeZone: 'Asia/Taipei',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    const newTime = new Date(date).toLocaleString('zh-TW', {
+      timeZone: 'Asia/Taipei',
+      hour12: false,
+      minute: '2-digit',
+      hour: '2-digit',
+    });
+
+    return `${newDate} (${newTime})`;
+  };
+
   // Render loading state or case content
   if (!currentCase.jid || caseIDs.length === 0) {
     return (
@@ -409,23 +427,12 @@ const Cases = ({ isLabel }) => {
           {/* Mark timestamp */}
           {currentCase.isHideUpdateAt && (
             <>
-              標記日期:{' '}
-              {new Date(currentCase.isHideUpdateAt.createdAt).toLocaleString(
-                'zh-TW',
-                {
-                  timeZone: 'Asia/Taipei',
-                  hour12: false,
-                }
-              )}
+              標記日期: {formatDateTime(currentCase.isHideUpdateAt.updatedAt)}
               <br />
             </>
           )}
           {/* Update timestamp */}
-          更新日期:{' '}
-          {new Date(currentCase.updatedAt).toLocaleString('zh-TW', {
-            timeZone: 'Asia/Taipei',
-            hour12: false,
-          })}
+          更新日期: {formatDateTime(currentCase.updatedAt)}
         </Col>
         {/* Content */}
         <Col sm={8}>
