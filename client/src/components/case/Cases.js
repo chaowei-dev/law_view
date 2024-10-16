@@ -7,6 +7,8 @@ import DataExtract from './DataExtract';
 import EditCase from './EditCase';
 import CaseNav from './CaseNav';
 import CaseView from './CaseView';
+import { copyWithFeedback } from '../../utils/copyUtils';
+import { formatDateTime } from '../../utils/timeUtils';
 
 const Cases = ({ isLabel }) => {
   const { id: caseId } = useParams();
@@ -102,49 +104,8 @@ const Cases = ({ isLabel }) => {
   };
 
   // Handle copy button
-  const copyToClipboard = (text) => {
-    // Clipboard API is not supported, use fallback method
-    let textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-      let successful = document.execCommand('copy');
-      let msg = successful ? 'successful' : 'unsuccessful';
-      console.log('Fallback: Copying text command was ' + msg);
-    } catch (err) {
-      console.error('Fallback: Oops, unable to copy', err);
-    }
-    document.body.removeChild(textArea);
-  };
-
   const handleCopyContent = () => {
-    // use non-https clipboard API
-    copyToClipboard(oriHighlightContent);
-
-    // Show success message for 2 seconds
-    setCopySuccess(true);
-    setTimeout(() => {
-      setCopySuccess(false);
-    }, 2000);
-  };
-
-  // Format the date/time string to "yyyy/MM/dd (HH:mm)"
-  const formatDateTime = (date) => {
-    const newDate = new Date(date).toLocaleString('zh-TW', {
-      timeZone: 'Asia/Taipei',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-    const newTime = new Date(date).toLocaleString('zh-TW', {
-      timeZone: 'Asia/Taipei',
-      hour12: false,
-      minute: '2-digit',
-      hour: '2-digit',
-    });
-
-    return `${newDate} (${newTime})`;
+    copyWithFeedback(oriHighlightContent, setCopySuccess);
   };
 
   // Render loading state or case content
@@ -260,24 +221,20 @@ const Cases = ({ isLabel }) => {
             isLabel={isLabel}
           />
         </Col>
-        {/* Copy button */}
-        <Col
-          xs={4}
-          sm={2}
-          className="d-flex flex-column justify-content-center"
-        >
-          <Button
-            variant="outline-primary"
-            onClick={handleCopyContent}
-            style={{ position: 'absolute', right: '20px' }}
-          >
-            {copySuccess ? 'Copied!' : 'Copy'}
-          </Button>
+        <Col xs={4} sm={2}>
+          <div className="d-flex justify-content-end mt-4">
+            {/* Hightlight button */}
+            <Button variant="outline-primary">Highlight</Button>
+            {/* Copy button */}
+            <Button variant="outline-primary" onClick={handleCopyContent}>
+              {copySuccess ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
         </Col>
       </Row>
       <Row>
-        {/* Extraction */}
         <Col sm={4}>
+          {/* Extraction */}
           <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} />
           {/* Mark timestamp */}
           {currentCase.isHideUpdateAt && (

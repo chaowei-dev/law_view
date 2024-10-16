@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal, Form, Button, InputGroup } from 'react-bootstrap';
 import caseService from '../../services/caseService';
+import { formatDateTime } from '../../utils/timeUtils';
 
 const EditCase = ({ onHide, show, lawCase, onSave }) => {
   const [formCase, setFormCase] = useState({
@@ -20,10 +21,10 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
         REMARKS: lawCase.remarks,
       });
 
-      setCreatedAt(formatTime(lawCase.createdAt));
-      setUpdatedAt(formatTime(lawCase.updatedAt));
+      setCreatedAt(formatDateTime(lawCase.createdAt));
+      setUpdatedAt(formatDateTime(lawCase.updatedAt));
       if (lawCase.is_hide === false)
-        setMarkedAt(formatTime(lawCase.isHideUpdateAt.updatedAt));
+        setMarkedAt(formatDateTime(lawCase.isHideUpdateAt.updatedAt));
     }
   }, [lawCase]);
 
@@ -32,23 +33,6 @@ const EditCase = ({ onHide, show, lawCase, onSave }) => {
       remarksRef.current.focus(); // Focus on the Remarks textarea when the modal opens
     }
   }, [show]);
-
-  const formatTime = (date) => {
-    const newDate = new Date(date).toLocaleString('zh-TW', {
-      timeZone: 'Asia/Taipei',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-    const newTime = new Date(date).toLocaleString('zh-TW', {
-      timeZone: 'Asia/Taipei',
-      hour12: false,
-      minute: '2-digit',
-      hour: '2-digit',
-    });
-
-    return `${newDate} (${newTime})`;
-  };
 
   const handleSubmit = () => {
     caseService
