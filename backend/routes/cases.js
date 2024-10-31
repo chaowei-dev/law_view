@@ -289,7 +289,6 @@ router.get('/all-id/:isLabel', authenticateToken, async (req, res) => {
 router.put(
   '/update/:id',
   authenticateToken,
-  checkRole(['super-user']),
   async (req, res) => {
     const { id } = req.params;
     // const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
