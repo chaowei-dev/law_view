@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {Button} from 'react-bootstrap';
+import { Button, Col, Form, Table } from 'react-bootstrap';
+import { formatDateTime } from '../../utils/timeUtils';
 
 const CaseView = ({
   currentCase,
@@ -11,6 +12,13 @@ const CaseView = ({
   const [oriHighlightContent, setOriHighlightContent] = useState('');
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
+  const [dataExtractionDict, setDataExtractionDict] = useState({
+    compensation_amount: '',
+    request_amount: '',
+    injured_part: '',
+    labor_ability_reduction: '',
+    medical_expense: '',
+  });
 
   const highlightContent = useCallback(
     (mainRegexPattern, secondRegexPattern) => {
@@ -52,8 +60,48 @@ const CaseView = ({
     [currentCase.jfull, mainKeywordText]
   );
 
+  // Format to TWD
+  const formatTWD = (value) => {
+    if (!value) return '';
+
+    // Return formatted TWD
+    return new Intl.NumberFormat('zh-TW', {
+      style: 'currency',
+      currency: 'TWD',
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  // Handle labor_ability_reduction
+  const handleLaborAbilityReduction = (value) => {
+    const laborAbilityMap = {
+      0: '無',
+      1: '有',
+    };
+
+    return laborAbilityMap[value] || '';
+  };
+
   useEffect(() => {
     if (currentCase && currentCase.jfull) {
+      // step 1: Process data extraction
+      const dataExtraction = currentCase.dataExtraction;
+      if (dataExtraction) {
+        setDataExtractionDict({
+          compensation_amount: formatTWD(
+            dataExtraction.compensation_amount.value
+          ),
+          request_amount: formatTWD(dataExtraction.request_amount.value),
+          injured_part: dataExtraction.injured_part.value,
+          labor_ability_reduction: handleLaborAbilityReduction(
+            dataExtraction.labor_ability_reduction.value
+          ),
+          medical_expense: formatTWD(dataExtraction.medical_expense.value),
+        });
+      }
+      // End of processing data extraction
+
+      // Step 2: Process highlighted content
       let mainRegexPattern;
       let secondRegexPattern;
 
@@ -88,6 +136,7 @@ const CaseView = ({
         : new RegExp(secondKeywordText, 'gi');
 
       highlightContent(mainRegexPattern, secondRegexPattern);
+      // End of processing highlighted content
     }
   }, [
     currentCase,
@@ -98,31 +147,94 @@ const CaseView = ({
   ]);
 
   return (
-    <div style={{ position: 'relative' }}>
-      {showTrimButton && (
-        <Button
-          variant={showTrimmedContent ? 'primary' : 'secondary'}
-          style={{ position: 'absolute', top: '10px', right: '20px' }}
-          onClick={() => setShowTrimmedContent(!showTrimmedContent)}
-        >
-          {showTrimmedContent ? '裁切' : '全文'}
-        </Button>
-      )}
-      <div
-        style={{
-          padding: '10px',
-          border: '1px solid #dee2e6',
-          maxHeight: '700px',
-          overflowY: 'auto',
-          whiteSpace: 'pre-wrap',
-        }}
-        dangerouslySetInnerHTML={{
-          __html: showTrimmedContent
-            ? oriHighlightContent
-            : keywordContent || 'No Content Available',
-        }}
-      ></div>
-    </div>
+    <>
+      {/* Extraction Table */}
+      <Col sm={4}>
+        <div>
+          <Table striped="columns">
+            <tbody>
+              <tr>
+                <th style={{ width: '30%' }}>慰撫金</th>
+                <td style={{ width: '70%' }}>
+                  {dataExtractionDict.compensation_amount}
+                </td>
+                <td style={{ width: '30%' }}>
+                  <Form.Check type="switch" id="custom-switch" label="" />
+                </td>
+              </tr>
+              <tr>
+                <th>原告請求</th>
+                <td>{dataExtractionDict.request_amount}</td>
+                <td>
+                  <Form.Check type="switch" id="custom-switch" label="" />
+                </td>
+              </tr>
+              <tr>
+                <th>傷害</th>
+                <td>{dataExtractionDict.injured_part}</td>
+                <td>
+                  <Form.Check type="switch" id="custom-switch" label="" />
+                </td>
+              </tr>
+              <tr>
+                <th>勞動力減損</th>
+                <td>
+                  {/* {(dataExtraction.labor_ability_reduction = '1' ? '有' : '無')} */}
+                  {dataExtractionDict.labor_ability_reduction}
+                </td>
+                <td>
+                  <Form.Check type="switch" id="custom-switch" label="" />
+                </td>
+              </tr>
+              <tr>
+                <th>醫療費</th>
+                <td>{dataExtractionDict.medical_expense}</td>
+                <td>
+                  <Form.Check type="switch" id="custom-switch" label="" />
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+        {/* Mark timestamp */}
+        {currentCase.isHideUpdateAt && (
+          <>
+            標記日期: {formatDateTime(currentCase.isHideUpdateAt.updatedAt)}
+            <br />
+          </>
+        )}
+        {/* Update timestamp */}
+        更新日期: {formatDateTime(currentCase.updatedAt)}
+      </Col>
+      {/* Case content */}
+      <Col sm={8}>
+        <div style={{ position: 'relative' }}>
+          {showTrimButton && (
+            <Button
+              variant={showTrimmedContent ? 'primary' : 'secondary'}
+              style={{ position: 'absolute', top: '10px', right: '20px' }}
+              onClick={() => setShowTrimmedContent(!showTrimmedContent)}
+            >
+              {showTrimmedContent ? '裁切' : '全文'}
+            </Button>
+          )}
+          <div
+            style={{
+              padding: '10px',
+              border: '1px solid #dee2e6',
+              maxHeight: '700px',
+              overflowY: 'auto',
+              whiteSpace: 'pre-wrap',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: showTrimmedContent
+                ? oriHighlightContent
+                : keywordContent || 'No Content Available',
+            }}
+          ></div>
+        </div>
+      </Col>
+    </>
   );
 };
 

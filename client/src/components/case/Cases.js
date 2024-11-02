@@ -3,12 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import caseService from '../../services/caseService';
 import keywordService from '../../services/keywordService';
-import DataExtract from './DataExtract';
 import EditCase from './EditCase';
 import CaseNav from './CaseNav';
 import CaseView from './CaseView';
 import { copyWithFeedback } from '../../utils/copyUtils';
-import { formatDateTime } from '../../utils/timeUtils';
 
 const Cases = ({ isLabel }) => {
   const { id: caseId } = useParams();
@@ -65,7 +63,7 @@ const Cases = ({ isLabel }) => {
           isLabelText
         );
         setCurrentCase(response.data);
-        setDataExtraction(response.data.dataExtraction);
+        // setDataExtraction(response.data.dataExtraction);
         setOriHighlightContent(response.data.jfull);
       } catch (error) {
         console.error('Error fetching case:', error);
@@ -223,8 +221,6 @@ const Cases = ({ isLabel }) => {
         </Col>
         <Col xs={4} sm={2}>
           <div className="d-flex justify-content-end mt-4">
-            {/* Hightlight button */}
-            <Button variant="outline-primary">Highlight</Button>
             {/* Copy button */}
             <Button variant="outline-primary" onClick={handleCopyContent}>
               {copySuccess ? 'Copied!' : 'Copy'}
@@ -233,30 +229,22 @@ const Cases = ({ isLabel }) => {
         </Col>
       </Row>
       <Row>
-        <Col sm={4}>
-          {/* Extraction */}
-          <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} />
-          {/* Mark timestamp */}
-          {currentCase.isHideUpdateAt && (
-            <>
-              標記日期: {formatDateTime(currentCase.isHideUpdateAt.updatedAt)}
-              <br />
-            </>
-          )}
-          {/* Update timestamp */}
-          更新日期: {formatDateTime(currentCase.updatedAt)}
-        </Col>
+        {/* <Col sm={4}> */}
+        {/* Extraction */}
+        {/* <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} /> */}
+
+        {/* </Col> */}
         {/* Content */}
         {/* If "currentCase", "mainKeywordText", "secondKeywordText", "keywordList" */}
         {/* are updated then rerender the CaseView */}
-        <Col sm={8}>
-          <CaseView
-            currentCase={currentCase}
-            mainKeywordText={mainKeywordText}
-            secondKeywordText={secondKeywordText}
-            keywordList={keywordList}
-          />
-        </Col>
+        {/* <Col sm={8}> */}
+        <CaseView
+          currentCase={currentCase}
+          mainKeywordText={mainKeywordText}
+          secondKeywordText={secondKeywordText}
+          keywordList={keywordList}
+        />
+        {/* </Col> */}
       </Row>
       {/* Editing modal */}
       {editingWindowShow && (
