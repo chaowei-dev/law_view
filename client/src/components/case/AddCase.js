@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Col, Container, Row, Card } from "react-bootstrap";
-import { FaFileAlt } from "react-icons/fa";
-import { GiConfirmed } from "react-icons/gi";
-import { MdError } from "react-icons/md";
-import caseService from "../../services/caseService";
-import authService from "../../services/authService";
+import React, { useState, useEffect } from 'react';
+import { Col, Container, Row, Card } from 'react-bootstrap';
+import { MdError } from 'react-icons/md';
+import caseService from '../../services/caseService';
+import authService from '../../services/authService';
 
 const AddCase = () => {
   const [files, setFiles] = useState([]);
   const [progress, setProgress] = useState({});
-  const [browserUserId, setBrowserUserId] = useState("");
+  const [browserUserId, setBrowserUserId] = useState('');
   const [totalFiles, setTotalFiles] = useState(0);
   const [currentFile, setCurrentFile] = useState(0);
-  const [sendState, setSendState] = useState("idle"); // "idle," "preparing," "sending," or "success"
+  const [sendState, setSendState] = useState('idle'); // "idle," "preparing," "sending," or "success"
   const [errorCaseList, setErrorCaseList] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]); // Track uploaded files and their statuses
 
@@ -32,7 +30,7 @@ const AddCase = () => {
     initializeProgress(fileArray);
 
     // Set send status to true
-    setSendState("preparing");
+    setSendState('preparing');
   };
 
   // Initialize progress for each file
@@ -68,7 +66,7 @@ const AddCase = () => {
 
   // Handles sequential file upload
   const uploadFilesSequentially = async (fileArray) => {
-    setSendState("sending");
+    setSendState('sending');
 
     for (let file of fileArray) {
       // Upload file to the API
@@ -78,7 +76,7 @@ const AddCase = () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    setSendState("success");
+    setSendState('success');
   };
 
   // Read file contents
@@ -118,7 +116,7 @@ const AddCase = () => {
         jtitle: jsonData.JTITLE,
         jfull: jsonData.JFULL,
         userId: browserUserId,
-        remarks: "",
+        remarks: '',
       };
 
       // Send case data to the API
@@ -134,11 +132,11 @@ const AddCase = () => {
 
         // Add to uploaded files
         setUploadedFiles((prevUploadedFiles) => [
-          { name: file.name, status: "success" },
+          { name: file.name, status: 'success' },
           ...prevUploadedFiles,
         ]);
       } else {
-        throw new Error("API response not OK");
+        throw new Error('API response not OK');
       }
     } catch (error) {
       console.error(`Error uploading ${file.name}:`, error);
@@ -150,7 +148,7 @@ const AddCase = () => {
 
       // Add to uploaded files with error status
       setUploadedFiles((prevUploadedFiles) => [
-        { name: file.name, status: "error" },
+        { name: file.name, status: 'error' },
         ...prevUploadedFiles,
       ]);
     }
@@ -164,10 +162,10 @@ const AddCase = () => {
   };
 
   const getStatusMessage = () => {
-    if (sendState === "preparing") return "檔案處理成功，等待寫入資料庫...";
-    if (sendState === "sending") return "資料寫入中...";
-    if (sendState === "success") return "資料寫入成功！";
-    return "";
+    if (sendState === 'preparing') return '檔案處理成功，等待寫入資料庫...';
+    if (sendState === 'sending') return '資料寫入中...';
+    if (sendState === 'success') return '資料寫入成功！';
+    return '';
   };
 
   return (
@@ -190,7 +188,7 @@ const AddCase = () => {
           </div>
         </Col>
         <Col xs lg="2" className="align-self-center">
-          {sendState === "preparing" && (
+          {sendState === 'preparing' && (
             <button className="btn btn-primary" onClick={handleDataSend}>
               寫入資料庫
             </button>
@@ -199,7 +197,7 @@ const AddCase = () => {
       </Row>
       {/* Total progress Display */}
       <Row className="mt-5">
-        <Card style={{ padding: "20px" }}>
+        <Card style={{ padding: '20px' }}>
           <Card.Text>
             <p className="text-center">{getStatusMessage()}</p>
             <p className="text-center">
@@ -250,15 +248,15 @@ const AddCase = () => {
           <p className="font-weight-bold">Error Cases:</p>
           <div
             style={{
-              maxHeight: "500px",
-              overflowY: "scroll",
+              maxHeight: '500px',
+              overflowY: 'scroll',
             }}
           >
             {errorCaseList.map((fileName, index) => (
               <div key={index} className="d-flex align-items-center mb-2">
                 <div className="flex-grow-1 me-2">{fileName}</div>
                 <div className="me-2">
-                  <MdError style={{ color: "red" }} />
+                  <MdError style={{ color: 'red' }} />
                 </div>
               </div>
             ))}

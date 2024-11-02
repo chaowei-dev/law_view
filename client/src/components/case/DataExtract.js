@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {  Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 
 const DataExtract = ({ dataExtraction, isLabel }) => {
   const [dataExtractionDict, setDataExtractionDict] = useState({
@@ -36,13 +36,15 @@ const DataExtract = ({ dataExtraction, isLabel }) => {
   useEffect(() => {
     if (dataExtraction) {
       setDataExtractionDict({
-        compensation_amount: formatTWD(dataExtraction.compensation_amount),
-        request_amount: formatTWD(dataExtraction.request_amount),
-        injured_part: dataExtraction.injured_part,
-        labor_ability_reduction: handleLaborAbilityReduction(
-          dataExtraction.labor_ability_reduction
+        compensation_amount: formatTWD(
+          dataExtraction.compensation_amount.value
         ),
-        medical_expense: formatTWD(dataExtraction.medical_expense),
+        request_amount: formatTWD(dataExtraction.request_amount.value),
+        injured_part: dataExtraction.injured_part.value,
+        labor_ability_reduction: handleLaborAbilityReduction(
+          dataExtraction.labor_ability_reduction.value
+        ),
+        medical_expense: formatTWD(dataExtraction.medical_expense.value),
       });
     }
   }, [dataExtraction]);
