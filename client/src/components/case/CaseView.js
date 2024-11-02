@@ -12,13 +12,7 @@ const CaseView = ({
   const [oriHighlightContent, setOriHighlightContent] = useState('');
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
-  const [dataExtractionDict, setDataExtractionDict] = useState({
-    compensation_amount: '',
-    request_amount: '',
-    injured_part: '',
-    labor_ability_reduction: '',
-    medical_expense: '',
-  });
+  const [dataExtractionDict, setDataExtractionDict] = useState({});
 
   const highlightContent = useCallback(
     (mainRegexPattern, secondRegexPattern) => {
@@ -86,18 +80,9 @@ const CaseView = ({
     if (currentCase && currentCase.jfull) {
       // step 1: Process data extraction
       const dataExtraction = currentCase.dataExtraction;
+
       if (dataExtraction) {
-        setDataExtractionDict({
-          compensation_amount: formatTWD(
-            dataExtraction.compensation_amount.value
-          ),
-          request_amount: formatTWD(dataExtraction.request_amount.value),
-          injured_part: dataExtraction.injured_part.value,
-          labor_ability_reduction: handleLaborAbilityReduction(
-            dataExtraction.labor_ability_reduction.value
-          ),
-          medical_expense: formatTWD(dataExtraction.medical_expense.value),
-        });
+        setDataExtractionDict(dataExtraction);
       }
       // End of processing data extraction
 
@@ -105,6 +90,8 @@ const CaseView = ({
       let mainRegexPattern;
       let secondRegexPattern;
 
+      // Main keyword
+      // If main keyword is '原文', show full content and hide trim button
       if (mainKeywordText === '原文') {
         setKeywordContent(currentCase.jfull);
         setShowTrimmedContent(false);
@@ -122,6 +109,7 @@ const CaseView = ({
         ? new RegExp(mainKeywordObj.pattern, 'gi')
         : new RegExp(mainKeywordText, 'gi');
 
+      // Second keyword
       if (secondKeywordText === '無') {
         highlightContent(mainRegexPattern, null);
         return;
@@ -135,6 +123,7 @@ const CaseView = ({
         ? new RegExp(secondKeywordObj.pattern, 'gi')
         : new RegExp(secondKeywordText, 'gi');
 
+      // Use main and second keyword to highlight content
       highlightContent(mainRegexPattern, secondRegexPattern);
       // End of processing highlighted content
     }
@@ -151,50 +140,54 @@ const CaseView = ({
       {/* Extraction Table */}
       <Col sm={4}>
         <div>
-          <Table striped="columns">
-            <tbody>
-              <tr>
-                <th style={{ width: '30%' }}>慰撫金</th>
-                <td style={{ width: '70%' }}>
-                  {dataExtractionDict.compensation_amount}
-                </td>
-                <td style={{ width: '30%' }}>
-                  <Form.Check type="switch" id="custom-switch" label="" />
-                </td>
-              </tr>
-              <tr>
-                <th>原告請求</th>
-                <td>{dataExtractionDict.request_amount}</td>
-                <td>
-                  <Form.Check type="switch" id="custom-switch" label="" />
-                </td>
-              </tr>
-              <tr>
-                <th>傷害</th>
-                <td>{dataExtractionDict.injured_part}</td>
-                <td>
-                  <Form.Check type="switch" id="custom-switch" label="" />
-                </td>
-              </tr>
-              <tr>
-                <th>勞動力減損</th>
-                <td>
-                  {/* {(dataExtraction.labor_ability_reduction = '1' ? '有' : '無')} */}
-                  {dataExtractionDict.labor_ability_reduction}
-                </td>
-                <td>
-                  <Form.Check type="switch" id="custom-switch" label="" />
-                </td>
-              </tr>
-              <tr>
-                <th>醫療費</th>
-                <td>{dataExtractionDict.medical_expense}</td>
-                <td>
-                  <Form.Check type="switch" id="custom-switch" label="" />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
+          {Object.keys(dataExtractionDict).length > 0 && (
+            <Table striped="columns">
+              <tbody>
+                <tr>
+                  <th style={{ width: '30%' }}>慰撫金</th>
+                  <td style={{ width: '70%' }}>
+                    {formatTWD(dataExtractionDict.compensation_amount.value)}
+                  </td>
+                  <td style={{ width: '30%' }}>
+                    <Form.Check type="switch" id="custom-switch" label="" />
+                  </td>
+                </tr>
+                <tr>
+                  <th>原告請求</th>
+                  {/* <td>{dataExtractionDict.request_amount}</td> */}
+                  <td>{formatTWD(dataExtractionDict.request_amount.value)}</td>
+                  <td>
+                    <Form.Check type="switch" id="custom-switch" label="" />
+                  </td>
+                </tr>
+                <tr>
+                  <th>傷害</th>
+                  <td>{dataExtractionDict.injured_part.value}</td>
+                  <td>
+                    <Form.Check type="switch" id="custom-switch" label="" />
+                  </td>
+                </tr>
+                <tr>
+                  <th>勞動力減損</th>
+                  <td>
+                    {handleLaborAbilityReduction(
+                      dataExtractionDict.labor_ability_reduction.value
+                    )}
+                  </td>
+                  <td>
+                    <Form.Check type="switch" id="custom-switch" label="" />
+                  </td>
+                </tr>
+                <tr>
+                  <th>醫療費</th>
+                  <td>{formatTWD(dataExtractionDict.medical_expense.value)}</td>
+                  <td>
+                    <Form.Check type="switch" id="custom-switch" label="" />
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          )}
         </div>
         {/* Mark timestamp */}
         {currentCase.isHideUpdateAt && (
