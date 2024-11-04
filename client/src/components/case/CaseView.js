@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Col, Form, Table } from 'react-bootstrap';
 import { formatDateTime } from '../../utils/timeUtils';
 import { formatTWD } from '../../utils/format2TWD';
+import DOMPurify from 'dompurify';
 
 const CaseView = ({
   currentCase,
@@ -14,53 +15,162 @@ const CaseView = ({
   const [showTrimmedContent, setShowTrimmedContent] = useState(false);
   const [showTrimButton, setShowTrimButton] = useState(true);
   const [dataExtractionDict, setDataExtractionDict] = useState({});
+  const [highlightSwitches, setHighlightSwitches] = useState({});
+  const [switchDisabled, setSwitchDisabled] = useState(true);
 
+  // Utility function to escape regex special characters
+  const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+
+  // Handle switch toggle
+  const handleSwitchToggle = (key) => {
+    setHighlightSwitches((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  // Highlighting function
   const highlightContent = useCallback(
     (mainRegexPattern, secondRegexPattern) => {
-      if (mainRegexPattern && !mainRegexPattern.test(currentCase.jfull)) {
+      let content = currentCase.jfull;
+
+      if (mainRegexPattern && !mainRegexPattern.test(content)) {
         setKeywordContent(`${mainKeywordText} NOT FOUND!`);
+        setOriHighlightContent('');
         return;
       }
 
-      let highlightedOriginalContent = currentCase.jfull.replace(
-        mainRegexPattern,
-        (match) => `<mark><b>${match}</b></mark>`
-      );
+      // Reset content to original before applying highlights
+      content = currentCase.jfull;
 
+      // Apply main keyword highlighting
+      if (mainRegexPattern) {
+        content = content.replace(
+          mainRegexPattern,
+          (match) => `<mark><b>${match}</b></mark>`
+        );
+      }
+
+      // Apply second keyword highlighting
       if (secondRegexPattern) {
-        highlightedOriginalContent = highlightedOriginalContent.replace(
+        content = content.replace(
           secondRegexPattern,
           (match) =>
             `<mark style="background-color: orange;"><b>${match}</b></mark>`
         );
       }
 
-      setOriHighlightContent(highlightedOriginalContent.trim());
+      // Apply additional highlights based on switches
+      Object.keys(highlightSwitches).forEach((key) => {
+        if (highlightSwitches[key]) {
+          const extraction = dataExtractionDict[key];
+          if (extraction && extraction.start_with && extraction.end_with) {
+            const { start_with, end_with } = extraction;
 
-      const startIndex = mainRegexPattern
-        ? mainRegexPattern.exec(currentCase.jfull)?.index || 0
-        : 0;
+            // Construct regex to include start_with and end_with
+            // [\s\S]*? matches any character (including newlines) non-greedily
+            const regex = new RegExp(
+              `(${escapeRegExp(start_with)}[\\s\\S]*?${escapeRegExp(
+                end_with
+              )})`,
+              'gi'
+            );
 
-      let highlightedKeywordContent = currentCase.jfull
-        .substring(startIndex)
-        .replace(mainRegexPattern, (match) => `<mark><b>${match}</b></mark>`)
-        .replace(
-          secondRegexPattern,
-          (match) =>
-            `<mark style="background-color: orange;"><b>${match}</b></mark>`
-        );
+            // Replace matched content with highlighted version
+            content = content.replace(
+              regex,
+              (match) =>
+                `<mark style="background-color: yellow;"><b>${match}</b></mark>`
+            );
+          }
+        }
+      });
 
-      setKeywordContent(highlightedKeywordContent.trim());
+      setOriHighlightContent(content.trim());
+
+      // For keywordContent (trimmed view)
+      let keywordContentStr = content; // Use already highlighted content
+      if (showTrimmedContent) {
+        // If trimming is enabled, keep the full highlighted content
+        setKeywordContent(content.trim());
+      } else {
+        // If not trimming, show only the portion from the main keyword onwards
+        const mainMatch = mainRegexPattern
+          ? currentCase.jfull.match(mainRegexPattern)
+          : null;
+        const startIndex = mainMatch
+          ? currentCase.jfull.indexOf(mainMatch[0])
+          : 0;
+
+        keywordContentStr = currentCase.jfull.substring(startIndex);
+
+        if (mainRegexPattern) {
+          keywordContentStr = keywordContentStr.replace(
+            mainRegexPattern,
+            (match) => `<mark><b>${match}</b></mark>`
+          );
+        }
+        if (secondRegexPattern) {
+          keywordContentStr = keywordContentStr.replace(
+            secondRegexPattern,
+            (match) =>
+              `<mark style="background-color: orange;"><b>${match}</b></mark>`
+          );
+        }
+
+        // Apply additional highlights to keywordContentStr
+        Object.keys(highlightSwitches).forEach((key) => {
+          if (highlightSwitches[key]) {
+            const extraction = dataExtractionDict[key];
+            if (extraction && extraction.start_with && extraction.end_with) {
+              const { start_with, end_with } = extraction;
+              const regex = new RegExp(
+                `(${escapeRegExp(start_with)}[\\s\\S]*?${escapeRegExp(
+                  end_with
+                )})`,
+                'gi'
+              );
+              keywordContentStr = keywordContentStr.replace(
+                regex,
+                (match) =>
+                  `<mark style="background-color: yellow;"><b>${match}</b></mark>`
+              );
+            }
+          }
+        });
+
+        setKeywordContent(keywordContentStr.trim());
+      }
     },
-    [currentCase.jfull, mainKeywordText]
+    [
+      currentCase.jfull,
+      mainKeywordText,
+      dataExtractionDict,
+      highlightSwitches,
+      showTrimmedContent,
+    ]
   );
 
+  // Initialize highlight switches when dataExtractionDict changes
+  useEffect(() => {
+    if (dataExtractionDict) {
+      const initialSwitches = {};
+      Object.keys(dataExtractionDict).forEach((key) => {
+        initialSwitches[key] = false;
+      });
+      setHighlightSwitches(initialSwitches);
+    }
+  }, [dataExtractionDict]);
+
+  // Main useEffect to process data extraction and highlight content
   useEffect(() => {
     if (currentCase && currentCase.jfull) {
-      // step 1: Process data extraction
+      // Step 1: Process data extraction
       const dataExtraction = currentCase.dataExtraction;
 
-      /* 
+      /*
       dataExtraction example:
       {
         "compensation_amount": {
@@ -87,6 +197,7 @@ const CaseView = ({
             "end_with": "元",
             "start_with": "付新臺幣（下同）",
             "value": "599150"
+        }
       }
       */
 
@@ -102,12 +213,16 @@ const CaseView = ({
       // Main keyword
       // If main keyword is '原文', show full content and hide trim button
       if (mainKeywordText === '原文') {
-        setKeywordContent(currentCase.jfull);
-        setShowTrimmedContent(false);
-        setShowTrimButton(false);
+        setKeywordContent(currentCase.jfull); // Show full content
+        setOriHighlightContent(currentCase.jfull); // Show full content
+        setShowTrimmedContent(false); // Disable trimming
+        setShowTrimButton(false); // Hide trim button
+        setSwitchDisabled(true); // Disable switches
+        setHighlightSwitches({}); // Reset switches
         return;
       } else {
-        setShowTrimButton(true);
+        setShowTrimButton(true); // Show trim button
+        setSwitchDisabled(false); // Enable switches
       }
 
       const mainKeywordObj = keywordList.find(
@@ -116,7 +231,7 @@ const CaseView = ({
 
       mainRegexPattern = mainKeywordObj?.pattern
         ? new RegExp(mainKeywordObj.pattern, 'gi')
-        : new RegExp(mainKeywordText, 'gi');
+        : new RegExp(escapeRegExp(mainKeywordText), 'gi');
 
       // Second keyword
       if (secondKeywordText === '無') {
@@ -130,7 +245,7 @@ const CaseView = ({
 
       secondRegexPattern = secondKeywordObj?.pattern
         ? new RegExp(secondKeywordObj.pattern, 'gi')
-        : new RegExp(secondKeywordText, 'gi');
+        : new RegExp(escapeRegExp(secondKeywordText), 'gi');
 
       // Use main and second keyword to highlight content
       highlightContent(mainRegexPattern, secondRegexPattern);
@@ -152,30 +267,54 @@ const CaseView = ({
           {Object.keys(dataExtractionDict).length > 0 && (
             <Table striped="columns">
               <tbody>
+                {/* Compensation Amount */}
                 <tr>
                   <th style={{ width: '30%' }}>慰撫金</th>
                   <td style={{ width: '70%' }}>
                     {formatTWD(dataExtractionDict.compensation_amount.value)}
                   </td>
                   <td style={{ width: '30%' }}>
-                    <Form.Check type="switch" id="custom-switch" label="" />
+                    <Form.Check
+                      type="switch"
+                      id="switch-compensation_amount"
+                      label=""
+                      disabled={switchDisabled}
+                      checked={highlightSwitches.compensation_amount || false}
+                      onChange={() => handleSwitchToggle('compensation_amount')}
+                    />
                   </td>
                 </tr>
+                {/* Request Amount */}
                 <tr>
                   <th>原告請求</th>
-                  {/* <td>{dataExtractionDict.request_amount}</td> */}
                   <td>{formatTWD(dataExtractionDict.request_amount.value)}</td>
                   <td>
-                    <Form.Check type="switch" id="custom-switch" label="" />
+                    <Form.Check
+                      type="switch"
+                      id="switch-request_amount"
+                      label=""
+                      disabled={switchDisabled}
+                      checked={highlightSwitches.request_amount || false}
+                      onChange={() => handleSwitchToggle('request_amount')}
+                    />
                   </td>
                 </tr>
+                {/* Injured Part */}
                 <tr>
                   <th>傷害</th>
                   <td>{dataExtractionDict.injured_part.value}</td>
                   <td>
-                    <Form.Check type="switch" id="custom-switch" label="" />
+                    <Form.Check
+                      type="switch"
+                      id="switch-injured_part"
+                      label=""
+                      disabled={switchDisabled}
+                      checked={highlightSwitches.injured_part || false}
+                      onChange={() => handleSwitchToggle('injured_part')}
+                    />
                   </td>
                 </tr>
+                {/* Labor Ability Reduction */}
                 <tr>
                   <th>勞動力減損</th>
                   <td>
@@ -186,14 +325,33 @@ const CaseView = ({
                       : '未知'}
                   </td>
                   <td>
-                    <Form.Check type="switch" id="custom-switch" label="" />
+                    <Form.Check
+                      type="switch"
+                      id="switch-labor_ability_reduction"
+                      label=""
+                      disabled={switchDisabled}
+                      checked={
+                        highlightSwitches.labor_ability_reduction || false
+                      }
+                      onChange={() =>
+                        handleSwitchToggle('labor_ability_reduction')
+                      }
+                    />
                   </td>
                 </tr>
+                {/* Medical Expense */}
                 <tr>
                   <th>醫療費</th>
                   <td>{formatTWD(dataExtractionDict.medical_expense.value)}</td>
                   <td>
-                    <Form.Check type="switch" id="custom-switch" label="" />
+                    <Form.Check
+                      type="switch"
+                      id="switch-medical_expense"
+                      label=""
+                      disabled={switchDisabled}
+                      checked={highlightSwitches.medical_expense || false}
+                      onChange={() => handleSwitchToggle('medical_expense')}
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -231,9 +389,11 @@ const CaseView = ({
               whiteSpace: 'pre-wrap',
             }}
             dangerouslySetInnerHTML={{
-              __html: showTrimmedContent
-                ? oriHighlightContent
-                : keywordContent || 'No Content Available',
+              __html: DOMPurify.sanitize(
+                showTrimmedContent
+                  ? oriHighlightContent
+                  : keywordContent || 'No Content Available'
+              ),
             }}
           ></div>
         </div>
