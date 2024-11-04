@@ -19,7 +19,6 @@ const Cases = ({ isLabel }) => {
   const [keywordList, setKeywordList] = useState([]);
   const [oriHighlightContent, setOriHighlightContent] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
-  const [dataExtraction, setDataExtraction] = useState({});
   const [editingWindowShow, setEditingWindowShow] = useState(false);
 
   // Step 1: Fetch all keywords
@@ -229,15 +228,6 @@ const Cases = ({ isLabel }) => {
         </Col>
       </Row>
       <Row>
-        {/* <Col sm={4}> */}
-        {/* Extraction */}
-        {/* <DataExtract dataExtraction={dataExtraction} isLabel={isLabel} /> */}
-
-        {/* </Col> */}
-        {/* Content */}
-        {/* If "currentCase", "mainKeywordText", "secondKeywordText", "keywordList" */}
-        {/* are updated then rerender the CaseView */}
-        {/* <Col sm={8}> */}
         <CaseView
           currentCase={currentCase}
           mainKeywordText={mainKeywordText}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Col, Form, Table } from 'react-bootstrap';
 import { formatDateTime } from '../../utils/timeUtils';
+import { formatTWD } from '../../utils/format2TWD';
 
 const CaseView = ({
   currentCase,
@@ -54,32 +55,40 @@ const CaseView = ({
     [currentCase.jfull, mainKeywordText]
   );
 
-  // Format to TWD
-  const formatTWD = (value) => {
-    if (!value) return '';
-
-    // Return formatted TWD
-    return new Intl.NumberFormat('zh-TW', {
-      style: 'currency',
-      currency: 'TWD',
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  // Handle labor_ability_reduction
-  const handleLaborAbilityReduction = (value) => {
-    const laborAbilityMap = {
-      0: '無',
-      1: '有',
-    };
-
-    return laborAbilityMap[value] || '';
-  };
-
   useEffect(() => {
     if (currentCase && currentCase.jfull) {
       // step 1: Process data extraction
       const dataExtraction = currentCase.dataExtraction;
+
+      /* 
+      dataExtraction example:
+      {
+        "compensation_amount": {
+          "end_with": "元",
+          "start_with": "、30000元、",
+          "value": "10000"
+        },
+        "injured_part": {
+            "end_with": "胸壁挫傷等",
+            "start_with": "下背挫傷，",
+            "value": "下背挫傷，原告甲○○受有背挫傷，原告林○○受有胸壁挫傷等"
+        },
+        "labor_ability_reduction": {
+            "end_with": "",
+            "start_with": "",
+            "value": "0"
+        },
+        "medical_expense": {
+            "end_with": "元",
+            "start_with": "，分別支出醫療費",
+            "value": "1650"
+        },
+        "request_amount": {
+            "end_with": "元",
+            "start_with": "付新臺幣（下同）",
+            "value": "599150"
+      }
+      */
 
       if (dataExtraction) {
         setDataExtractionDict(dataExtraction);
@@ -170,9 +179,11 @@ const CaseView = ({
                 <tr>
                   <th>勞動力減損</th>
                   <td>
-                    {handleLaborAbilityReduction(
-                      dataExtractionDict.labor_ability_reduction.value
-                    )}
+                    {dataExtractionDict.labor_ability_reduction.value === '1'
+                      ? '有'
+                      : dataExtractionDict.labor_ability_reduction.value === '0'
+                      ? '無'
+                      : '未知'}
                   </td>
                   <td>
                     <Form.Check type="switch" id="custom-switch" label="" />
