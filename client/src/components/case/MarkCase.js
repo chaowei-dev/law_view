@@ -63,6 +63,49 @@ const MarkCase = () => {
       });
   };
 
+  // Download all remarks from database
+  const handleDownloadAllRemarks = async () => {
+    try {
+      // Fetch JSON data from the backend
+      const response = await caseService.downloadAllRemarks();
+      const caseIds = response.data;
+
+      if (!caseIds || caseIds.length === 0) {
+        alert('No data available for download.');
+        return;
+      }
+
+      // Convert JSON to CSV
+      const headers = ['id', 'jid', 'remarks'];
+      const csvRows = [
+        headers.join(','), // Add headers
+        ...caseIds.map((row) =>
+          headers.map((header) => `"${row[header] || ''}"`).join(',')
+        ), // Map each object to a CSV row
+      ];
+
+      const csvContent = csvRows.join('\n');
+
+      // Create a Blob and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute('download', 'case_ids_remarks.csv');
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      alert('Download complete.');
+    } catch (error) {
+      console.error('Error downloading remarks:', error);
+      alert('An error occurred while downloading the remarks.');
+    }
+  };
+
   const getStatusMessage = () => {
     switch (sendState) {
       case 'idle':
@@ -87,16 +130,15 @@ const MarkCase = () => {
       <Row className="mt-3">
         <h2 className="text-center">標記案件</h2>
       </Row>
-      {/* Hide all cases to true */}
-      {sendState === 'idle' && (
-        <Row className="mt-5 justify-content-center">
-          <Col xl="auto">
-            <Button variant="danger" onClick={handleAllCaseToHide}>
-              初始所有案件
-            </Button>
-          </Col>
-        </Row>
-      )}
+      {/* Download button */}
+      <Row className="mt-2 justify-content-center">
+        <Col xl="auto">
+          <Button variant="secondary" onClick={handleDownloadAllRemarks}>
+            下載所有標記
+          </Button>
+        </Col>
+      </Row>
+      <hr />
       {/* File Upload Component */}
       <Row className="justify-content-md-center mt-5">
         {(sendState === 'idle' || sendState === 'sendable') && (
@@ -121,7 +163,7 @@ const MarkCase = () => {
         </Col>
       </Row>
       {/* Upload Status */}
-      <Row className="mt-5">
+      <Row className="mt-5 mb-5">
         <Col></Col>
         <Col>
           <Card className="text-center">
@@ -133,6 +175,7 @@ const MarkCase = () => {
         </Col>
         <Col></Col>
       </Row>
+      <hr />
       <Row className="mt-5 align-items-center">
         <Col className="text-center">
           <div className="d-flex flex-column align-items-center">
@@ -140,6 +183,18 @@ const MarkCase = () => {
             <p>檔案來源: /res/caselist.csv</p>
           </div>
         </Col>
+      </Row>
+      {/* Hide all cases to true */}
+      <Row className="align-items-center">
+        {sendState === 'idle' && (
+          <Row className="mt-2 justify-content-center">
+            <Col xl="auto">
+              <Button variant="danger" onClick={handleAllCaseToHide}>
+                初始所有案件
+              </Button>
+            </Col>
+          </Row>
+        )}
       </Row>
     </Container>
   );

@@ -285,43 +285,85 @@ router.get('/all-id/:isLabel', authenticateToken, async (req, res) => {
   }
 });
 
-// Update case by id, only update passing fields
-router.put(
-  '/update/:id',
-  authenticateToken,
-  async (req, res) => {
-    const { id } = req.params;
-    // const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
-    const { REMARKS } = req.body;
+// Get all case ids with it's remarks for .csv export
+router.get('/all-id-remarks', authenticateToken, async (req, res) => {
+  try {
+    // Get all case ids with remarks
+    const caseIds = await prisma.case.findMany({
+      select: { id: true, jid: true, remarks: true },
+      where: { is_hide: false },
+    });
 
-    // Replace \r\n to <br/> for line break
-    // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
-
-    // const intJYEAR = parseInt(JYEAR);
-    // const intJNO = parseInt(JNO);
-
-    try {
-      const updatedCase = await prisma.case.update({
-        where: { id: parseInt(id) },
-        data: {
-          // jid: JID,
-          // jyear: intJYEAR,
-          // jcase: JCASE,
-          // jno: intJNO,
-          // jdate: JDATE,
-          // jtitle: JTITLE,
-          // jfull: JFULL,
-          remarks: REMARKS,
-        },
-      });
-      res.json(updatedCase);
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: 'Error updating case', error: error.message });
+    // If no case ids found, return empty array
+    if (caseIds.length === 0) {
+      return res.status(404).json({ message: 'No data available for export' });
     }
+
+    // Response caseIds
+    res.json(caseIds);
+
+    // // Path for the CSV file
+    // const filePath = path.join(__dirname, 'case_ids_remarks.csv');
+    // const writableStream = fs.createWriteStream(filePath);
+
+    // // Write data to CSV
+    // const csvStream = fastCsv
+    //   .write(caseIds, { headers: true })
+    //   .on('finish', () => {
+    //     // Send the file to the client
+    //     res.download(filePath, 'case_ids_remarks.csv', (err) => {
+    //       if (err) {
+    //         console.error('Error sending the file:', err);
+    //         res.status(500).json({ message: 'Error exporting data.' });
+    //       }
+
+    //       // Delete the file after sending it
+    //       fs.unlinkSync(filePath);
+    //     });
+    //   });
+
+    // csvStream.pipe(writableStream);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error retrieving case ids with remarks',
+      error: error.message,
+    });
   }
-);
+});
+
+// Update case by id, only update passing fields
+router.put('/update/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  // const { JID, JYEAR, JCASE, JNO, JDATE, JTITLE, JFULL, REMARKS } = req.body;
+  const { REMARKS } = req.body;
+
+  // Replace \r\n to <br/> for line break
+  // const jfullWithBreak = JFULL.replace(/\r\n/g, "<br/>");
+
+  // const intJYEAR = parseInt(JYEAR);
+  // const intJNO = parseInt(JNO);
+
+  try {
+    const updatedCase = await prisma.case.update({
+      where: { id: parseInt(id) },
+      data: {
+        // jid: JID,
+        // jyear: intJYEAR,
+        // jcase: JCASE,
+        // jno: intJNO,
+        // jdate: JDATE,
+        // jtitle: JTITLE,
+        // jfull: JFULL,
+        remarks: REMARKS,
+      },
+    });
+    res.json(updatedCase);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error updating case', error: error.message });
+  }
+});
 
 // Delete case by id
 router.delete(

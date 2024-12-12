@@ -113,11 +113,22 @@ const caseService = {
   markCaseToHide: () => {
     return axios.put(API_URL + 'mark-case-to-hide', null, {
       headers: {
-        Authorization
-          : 'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
+        Authorization:
+          'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
       },
     });
-  }
+  },
+
+  // Download all remarks from database
+  // /api/cases/all-id-remarks
+  downloadAllRemarks: () => {
+    return axios.get(API_URL + 'all-id-remarks', {
+      headers: {
+        Authorization:
+          'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
+      },
+    });
+  },
 };
 
 export default caseService;
