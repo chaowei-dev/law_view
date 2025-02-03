@@ -34,7 +34,10 @@ const CaseSearch = ({ caseKeyword }) => {
 
   // Handle search button
   const handleSearch = () => {
-    const searchKeyword = `jid=${jidKeyword}&remarks=${remarksKeyword}&jfull=${jfullKeyword}&isHide=${isHide}&desc=${desc}`;
+    // If .txt in jidKeyword, remove it before search
+    let cleanedJidKeyword = jidKeyword.includes('.txt') ? jidKeyword.slice(0, -4) : jidKeyword;
+
+    const searchKeyword = `jid=${cleanedJidKeyword}&remarks=${remarksKeyword}&jfull=${jfullKeyword}&isHide=${isHide}&desc=${desc}`;
 
     console.log('Search: ', searchKeyword);
 
