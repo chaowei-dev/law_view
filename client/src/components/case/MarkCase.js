@@ -106,6 +106,48 @@ const MarkCase = () => {
     }
   };
 
+  const handleDownloadAllJidExtraction = async () => {
+    try {
+      // Fetch JSON data from the backend
+      const response = await caseService.downloadAllJidExtraction();
+      const caseIds = response.data;
+
+      if (!caseIds || caseIds.length === 0) {
+        alert('No data available for download.');
+        return;
+      }
+
+      // Convert JSON to CSV
+      const headers = ['jid', 'compensation_amount', 'injured_part', "labor_ability_reduction", "medical_expense", "request_amount"];
+      const csvRows = [
+        headers.join(','), // Add headers
+        ...caseIds.map((row) =>
+          headers.map((header) => `"${row[header] || ''}"`).join(',')
+        ), // Map each object to a CSV row
+      ];
+
+      const csvContent = csvRows.join('\n');
+
+      // Create a Blob and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute('download', 'case_ids_jid_extraction.csv');
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      alert('Download complete.');
+    } catch (error) {
+      console.error('Error downloading remarks:', error);
+      alert('An error occurred while downloading the remarks.');
+    }
+  };
+
   const getStatusMessage = () => {
     switch (sendState) {
       case 'idle':
@@ -134,7 +176,12 @@ const MarkCase = () => {
       <Row className="mt-2 justify-content-center">
         <Col xl="auto">
           <Button variant="secondary" onClick={handleDownloadAllRemarks}>
-            下載所有標記
+            下載所有標記過的案件
+          </Button>
+        </Col>
+        <Col xl="auto">
+          <Button variant="secondary" onClick={handleDownloadAllJidExtraction}>
+            下載包含Labels案件
           </Button>
         </Col>
       </Row>

@@ -15,8 +15,8 @@ POST http://localhost:3001/api/users/signup
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin",
+  "username": "admin1",
+  "password": "admin1",
   "role": "super-user"
 }
 
@@ -27,8 +27,8 @@ POST http://localhost:3001/api/users/login
 Content-Type: application/json
 
 {
-  "username": "user",
-  "password": "user"
+  "username": "admin1",
+  "password": "admin1"
 }
 
 ###
@@ -38,8 +38,8 @@ POST http://163.13.172.18:3000/api/users/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "username": "admin1",
+  "password": "admin1"
 }
 
 ###

@@ -10,6 +10,8 @@ import axios from 'axios';
 import fs from 'fs';
 import csv from 'csv-parser';
 import multer from 'multer';
+import { checkUrls } from '../utils/checkUrl.js';
+import { request } from 'http';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -210,12 +212,22 @@ router.get('/case/:isLabel/:id', authenticateToken, async (req, res) => {
     // replace " ", "\n", "\t", "\r", "　", "\\r\\n"
     jfull = jfull.replace(/[\s\n\t\r　]/g, '');
 
+    // Check which URL to use
+    const urls = [
+      'http://localhost:3005/api/extract',
+      'http://flask_api:3005/api/extract',
+    ];
+
+    // Check which URL to use
+    const falsk_url = await checkUrls(urls);
+
     // isLabel is true, then get data extraction
     if (isLabel === 'true') {
       // Get data extraction from http://localhost:3005/api/extract
       try {
         // const response = await axios.post('http://localhost:3005/api/extract', {
-        const response = await axios.post('http://flask_api:3005/api/extract', {
+        // const response = await axios.post('http://flask_api:3005/api/extract', {
+        const response = await axios.post(falsk_url, {
           text: jfull,
         });
         dataExtraction = response.data;
@@ -326,6 +338,73 @@ router.get('/all-id-remarks', authenticateToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'Error retrieving case ids with remarks',
+      error: error.message,
+    });
+  }
+});
+
+// Get all case jid with flask extraction data
+// 1. Get all jid and jfull
+// 2. Loop all jfull and get extraction data from flask api
+// 3. Return a list of all jid with extraction data
+router.get('/all-jid-extraction', authenticateToken, async (req, res) => {
+  try {
+    // Get all case jid and jfull
+    const cases = await prisma.case.findMany({
+      select: {
+        jid: true,
+        jfull: true,
+      },
+    });
+
+    // Check which URL to use
+    const urls = [
+      'http://localhost:3005/api/extract',
+      'http://flask_api:3005/api/extract',
+    ];
+
+    // Check which URL to use
+    const falsk_url = await checkUrls(urls);
+
+    // Loop all cases and get extraction data
+    const extractionData = [];
+    for (let i = 0; i < cases.length; i++) {
+      const jfull = cases[i].jfull;
+      const jid = cases[i].jid;
+
+      // Get data extraction from http://localhost:3005/api/extract
+      try {
+        // const response = await axios.post('http://localhost:3005/api/extract', {
+        // const response = await axios.post('http://flask_api:3005/api/extract', {
+        const response = await axios.post(falsk_url, {
+          text: jfull,
+        });
+
+        const { data } = response;
+
+        // Add jid and extraction data to extractionData
+        extractionData.push({
+          jid,
+          compensation_amount: data.compensation_amount.value,
+          injured_part: data.injured_part.value,
+          labor_ability_reduction: data.labor_ability_reduction.value,
+          medical_expense: data.medical_expense.value,
+          request_amount: data.request_amount.value,
+        });
+      } catch (error) {
+        // Add jid and error message to extractionData
+        extractionData.push({
+          jid,
+          data: `Error extracting data: ${error.message}`,
+        });
+      }
+    }
+
+    // Response extractionData
+    res.json(extractionData);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error retrieving case jid with extraction data',
       error: error.message,
     });
   }

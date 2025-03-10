@@ -129,6 +129,17 @@ const caseService = {
       },
     });
   },
+
+  // Downlad all cases with jid and extration from flask api
+  // /api/cases/all-jid-extraction
+  downloadAllJidExtraction: () => {
+    return axios.get(API_URL + 'all-jid-extraction', {
+      headers: {
+        Authorization:
+          'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
+      },
+    });
+  },
 };
 
 export default caseService;
